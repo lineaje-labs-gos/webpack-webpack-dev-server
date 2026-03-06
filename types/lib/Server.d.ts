@@ -1,9 +1,5 @@
 export = Server;
 /**
- * @typedef {object} BasicApplication
- * @property {typeof useFn} use
- */
-/**
  * @template {BasicApplication} [A=ExpressApplication]
  * @template {BasicServer} [S=HTTPServer]
  */
@@ -1167,7 +1163,10 @@ declare class Server<
    * @param {Compiler | MultiCompiler} compiler compiler
    */
   constructor(options: Configuration<A, S>, compiler: Compiler | MultiCompiler);
-  compiler: import("webpack").Compiler | import("webpack").MultiCompiler;
+  compiler:
+    | import("webpack").Compiler
+    | import("webpack").MultiCompiler
+    | undefined;
   /**
    * @type {ReturnType<Compiler["getInfrastructureLogger"]>}
    */
@@ -1409,6 +1408,11 @@ declare class Server<
    * @param {((err?: Error) => void)=} callback callback
    */
   stopCallback(callback?: ((err?: Error) => void) | undefined): void;
+  /**
+   * @param {Compiler} compiler compiler
+   * @returns {void}
+   */
+  apply(compiler: Compiler): void;
   #private;
 }
 declare namespace Server {
