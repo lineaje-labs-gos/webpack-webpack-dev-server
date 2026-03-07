@@ -165,3 +165,13 @@ exports[`API latest async API should work with callback API: console messages 1`
 `;
 
 exports[`API latest async API should work with callback API: page errors 1`] = `[]`;
+
+exports[`API should work with plugin API: console messages 1`] = `
+[
+  "[webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled.",
+  "[HMR] Waiting for update signal from WDS...",
+  "Hey.",
+]
+`;
+
+exports[`API should work with plugin API: page errors 1`] = `[]`;
