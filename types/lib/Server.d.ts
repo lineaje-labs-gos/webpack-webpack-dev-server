@@ -1197,6 +1197,11 @@ declare class Server<
   private currentHash;
   /**
    * @private
+   * @type {boolean}
+   */
+  private isPlugin;
+  /**
+   * @private
    * @param {Compiler} compiler compiler
    */
   private addAdditionalEntries;
