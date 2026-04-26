@@ -92,6 +92,91 @@ describe("API", () => {
     stopSpy.mockRestore();
   });
 
+  describe("plugin in webpack config", () => {
+    it("should work when added to webpack config plugins array", async () => {
+      const server = new Server({ port });
+      const compiler = webpack({
+        ...config,
+        plugins: [...config.plugins, server],
+      });
+
+      await compile(compiler, port);
+
+      const { page, browser } = await runBrowser();
+
+      try {
+        const pageErrors = [];
+        const consoleMessages = [];
+
+        page
+          .on("console", (message) => {
+            consoleMessages.push(message);
+          })
+          .on("pageerror", (error) => {
+            pageErrors.push(error);
+          });
+
+        await page.goto(`http://127.0.0.1:${port}/`, {
+          waitUntil: "networkidle0",
+        });
+
+        expect(
+          consoleMessages.map((message) => message.text()),
+        ).toMatchSnapshot("console messages");
+        expect(pageErrors).toMatchSnapshot("page errors");
+      } finally {
+        await browser.close();
+        await new Promise((resolve) => {
+          compiler.close(resolve);
+        });
+      }
+    });
+
+    it("should work with output.clean: true", async () => {
+      const server = new Server({ port });
+      const compiler = webpack({
+        ...config,
+        output: {
+          ...config.output,
+          clean: true,
+        },
+        plugins: [...config.plugins, server],
+      });
+
+      await compile(compiler, port);
+
+      const { page, browser } = await runBrowser();
+
+      try {
+        const pageErrors = [];
+        const consoleMessages = [];
+
+        page
+          .on("console", (message) => {
+            consoleMessages.push(message);
+          })
+          .on("pageerror", (error) => {
+            pageErrors.push(error);
+          });
+
+        const response = await page.goto(`http://127.0.0.1:${port}/`, {
+          waitUntil: "networkidle0",
+        });
+
+        expect(response.status()).toBe(200);
+        expect(
+          consoleMessages.map((message) => message.text()),
+        ).toMatchSnapshot("console messages");
+        expect(pageErrors).toMatchSnapshot("page errors");
+      } finally {
+        await browser.close();
+        await new Promise((resolve) => {
+          compiler.close(resolve);
+        });
+      }
+    });
+  });
+
   describe("WEBPACK_SERVE environment variable", () => {
     const OLD_ENV = process.env;
     let server;
