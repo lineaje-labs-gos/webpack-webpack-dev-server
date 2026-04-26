@@ -49,7 +49,8 @@ describe("API", () => {
   it("should not start the server multiple times on recompilation", async () => {
     const compiler = webpack(config);
     const server = new Server({ port });
-    const startSpy = jest.spyOn(server, "start");
+    const setupSpy = jest.spyOn(server, "setup");
+    const listenSpy = jest.spyOn(server, "listen");
 
     server.apply(compiler);
 
@@ -67,9 +68,11 @@ describe("API", () => {
       setTimeout(resolve, 2000);
     });
 
-    expect(startSpy).toHaveBeenCalledTimes(1);
+    expect(setupSpy).toHaveBeenCalledTimes(1);
+    expect(listenSpy).toHaveBeenCalledTimes(1);
 
-    startSpy.mockRestore();
+    setupSpy.mockRestore();
+    listenSpy.mockRestore();
     await new Promise((resolve) => {
       compiler.close(resolve);
     });
