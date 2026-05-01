@@ -1402,6 +1402,16 @@ declare class Server<
    */
   start(): Promise<void>;
   /**
+   * @private
+   * @returns {Promise<void>}
+   */
+  private setup;
+  /**
+   * @private
+   * @returns {Promise<void>}
+   */
+  private listen;
+  /**
    * @param {((err?: Error) => void)=} callback callback
    */
   startCallback(callback?: ((err?: Error) => void) | undefined): void;
@@ -1414,10 +1424,10 @@ declare class Server<
    */
   stopCallback(callback?: ((err?: Error) => void) | undefined): void;
   /**
-   * @param {Compiler} compiler compiler
+   * @param {Compiler | MultiCompiler} compiler compiler
    * @returns {void}
    */
-  apply(compiler: Compiler): void;
+  apply(compiler: Compiler | MultiCompiler): void;
   #private;
 }
 declare namespace Server {
