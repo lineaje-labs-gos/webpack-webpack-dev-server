@@ -9,9 +9,9 @@ export default {
     "<rootDir>/client/",
   ],
   testPathIgnorePatterns: ["<rootDir>/bin/this/process-arguments.js"],
-  snapshotResolver: "<rootDir>/test/helpers/snapshotResolver.js",
-  setupFilesAfterEnv: ["<rootDir>/scripts/setupTest.js"],
-  globalSetup: "<rootDir>/scripts/globalSetupTest.js",
+  snapshotResolver: "<rootDir>/test/helpers/snapshotResolver.cjs",
+  setupFilesAfterEnv: ["<rootDir>/scripts/setupTest.cjs"],
+  globalSetup: "<rootDir>/scripts/globalSetupTest.cjs",
   moduleNameMapper: {
     // This forces Jest/jest-environment-jsdom to use a Node+CommonJS version of uuid, not a Browser+ESM one
     // See https://github.com/uuidjs/uuid/pull/616
