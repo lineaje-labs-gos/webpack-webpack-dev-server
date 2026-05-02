@@ -1,10 +1,12 @@
-/**
- * @jest-environment jsdom
- */
-
 "use strict";
 
 const { createOverlay } = require("../../client-src/overlay");
+
+const { setupTest } = require("../helpers/test-runner");
+
+require("../helpers/jsdom-env").install();
+
+setupTest(__filename);
 
 describe("createOverlay", () => {
   const originalDocument = globalThis.document;

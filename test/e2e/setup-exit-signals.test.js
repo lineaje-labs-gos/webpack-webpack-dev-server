@@ -4,7 +4,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/simple-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["setup-exit-signals-option"];
+
+setupTest(__filename);
 
 describe("setupExitSignals option", () => {
   describe("should handle 'SIGINT' and 'SIGTERM' signals", () => {

@@ -1,7 +1,10 @@
 "use strict";
 
 const { testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-compress"];
+
+setupTest(__filename);
 
 describe('"compress" CLI option', () => {
   it('should work using "--compress"', async () => {

@@ -4,7 +4,10 @@ const path = require("node:path");
 const util = require("node:util");
 const execa = require("execa");
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-basic"];
+
+setupTest(__filename);
 
 const isMacOS = process.platform === "darwin";
 
@@ -13,9 +16,7 @@ describe("basic", () => {
     (isMacOS ? it.skip : it)("should generate correct cli flags", async () => {
       const { exitCode, stdout } = await testBin(["--help"]);
 
-      // eslint-disable-next-line jest/no-standalone-expect
       expect(exitCode).toBe(0);
-      // eslint-disable-next-line jest/no-standalone-expect
       expect(util.stripVTControlCharacters(stdout)).toMatchSnapshot();
     });
   });
@@ -324,7 +325,6 @@ describe("basic", () => {
       expect(stdout).toContain("client/index.js");
     });
 
-    // eslint-disable-next-line jest/no-disabled-tests
     it.skip("should use different random port when multiple instances are started on different processes", async () => {
       const cliPath = path.resolve(
         __dirname,

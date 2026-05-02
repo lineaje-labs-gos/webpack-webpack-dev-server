@@ -1,7 +1,10 @@
 "use strict";
 
 const { testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-web-socket-server"];
+
+setupTest(__filename);
 
 describe('"webSocketServer" CLI option', () => {
   it('should work using "--web-socket-server-type ws"', async () => {

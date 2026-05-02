@@ -1,8 +1,10 @@
-/**
- * @jest-environment jsdom
- */
-
 "use strict";
+
+const { setupTest } = require("../../helpers/test-runner");
+
+require("../../helpers/jsdom-env").install();
+
+setupTest(__filename);
 
 describe("'getCurrentScriptSource' function", () => {
   let getCurrentScriptSource;

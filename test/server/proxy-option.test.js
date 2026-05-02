@@ -7,7 +7,10 @@ const webpack = require("webpack");
 const WebSocket = require("ws");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/proxy-config/webpack.config");
+const { setupTest } = require("../helpers/test-runner");
 const [port1, port2, port3, port4] = require("../ports-map")["proxy-option"];
+
+setupTest(__filename);
 
 const WebSocketServer = WebSocket.Server;
 const staticDirectory = path.resolve(__dirname, "../fixtures/proxy-config");
@@ -89,6 +92,9 @@ describe("proxy option", () => {
   let proxyServer1;
   let proxyServer2;
 
+  /**
+   * @param stderrSpy
+   */
   function getStderrOutput(stderrSpy) {
     return stderrSpy.mock.calls
       .map((call) => call[0])
@@ -98,6 +104,9 @@ describe("proxy option", () => {
       .replaceAll(/\[ENOTFOUND\]|\[EAI_AGAIN\]/g, "[<DNS_ERROR>]");
   }
 
+  /**
+   * @param consoleSpy
+   */
   function getConsoleErrorOutput(consoleSpy) {
     return consoleSpy.mock.calls
       .map((call) => call[0])
@@ -106,6 +115,9 @@ describe("proxy option", () => {
       .replaceAll(/\[ENOTFOUND\]|\[EAI_AGAIN\]/g, "[<DNS_ERROR>]");
   }
 
+  /**
+   *
+   */
   async function listenProxyServers() {
     const proxyApp1 = express();
     const proxyApp2 = express();
@@ -136,6 +148,9 @@ describe("proxy option", () => {
     });
   }
 
+  /**
+   *
+   */
   async function closeProxyServers() {
     await new Promise((resolve) => {
       proxyServer1.close(() => {

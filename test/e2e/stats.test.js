@@ -5,7 +5,10 @@ const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const HTMLGeneratorPlugin = require("../helpers/html-generator-plugin");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").stats;
+
+setupTest(__filename);
 
 jest.spyOn(globalThis.console, "log").mockImplementation();
 

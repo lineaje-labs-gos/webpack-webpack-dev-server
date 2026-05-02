@@ -64,19 +64,18 @@ jobs:
         run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   test:
-    name: Test - ${{ matrix.os }} - Node v${{ matrix.node-version }}, Webpack ${{ matrix.webpack-version }} (${{ matrix.shard }})
+    name: Test - ${{ matrix.os }} - Node v${{ matrix.node-version }}, Webpack ${{ matrix.webpack-version }}
 
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [22.x, 24.x, 25.x]
-        shard: ["1/4", "2/4", "3/4", "4/4"]
         webpack-version: [latest]
 
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: test-${{ matrix.os }}-v${{ matrix.node-version }}-${{ matrix.webpack-version }}-${{ matrix.shard }}-${{ github.ref }}
+      group: test-${{ matrix.os }}-v${{ matrix.node-version }}-${{ matrix.webpack-version }}-${{ github.ref }}
       cancel-in-progress: true
 
     steps:
@@ -106,7 +105,7 @@ jobs:
           cp -R tmp-client client
 
       - name: Run tests for webpack version ${{ matrix.webpack-version }}
-        run: npm run test:coverage -- --ci --shard=${{ matrix.shard }}
+        run: npm run test:coverage
 
       - name: Submit coverage data to codecov
         uses: codecov/codecov-action@v5

@@ -3,7 +3,10 @@
 const fs = require("node:fs");
 const Server = require("../../lib/Server");
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-bonjour"];
+
+setupTest(__filename);
 
 const defaultCertificateDir = Server.findCacheDir();
 

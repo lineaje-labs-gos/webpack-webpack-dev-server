@@ -1,7 +1,10 @@
 "use strict";
 
 const { testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-allowed-hosts"];
+
+setupTest(__filename);
 
 describe('"allowedHosts" CLI option', () => {
   it('should work using "--allowed-hosts auto"', async () => {

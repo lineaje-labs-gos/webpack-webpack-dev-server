@@ -1,7 +1,10 @@
 "use strict";
 
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-static"];
+
+setupTest(__filename);
 
 describe('"static" CLI option', () => {
   it('should work using "--static"', async () => {

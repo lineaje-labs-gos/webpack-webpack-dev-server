@@ -3,6 +3,9 @@
 const os = require("node:os");
 const path = require("node:path");
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
+
+setupTest(__filename);
 
 describe('"ipc" CLI option', () => {
   it('should work using "--ipc"', async () => {

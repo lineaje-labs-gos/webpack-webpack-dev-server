@@ -5,7 +5,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["options-request-response"];
+
+setupTest(__filename);
 
 const createWaiting = () => {
   let resolve;

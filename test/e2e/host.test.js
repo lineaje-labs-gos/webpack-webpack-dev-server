@@ -5,11 +5,18 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").host;
+
+setupTest(__filename);
 
 const ipv4 = Server.findIp("v4", false);
 const ipv6 = Server.findIp("v6", false);
 
+/**
+ * @param host
+ * @param hostname
+ */
 async function getAddress(host, hostname) {
   let address;
 
@@ -301,7 +308,6 @@ describe("host", () => {
   }
 
   // TODO need test on error
-  // eslint-disable-next-line jest/no-commented-out-tests
   // it(`should throw an error on invalid host`, async () => {
   //   const compiler = webpack(config);
   //   const server = new Server({ port, host: "unknown.unknown" }, compiler);

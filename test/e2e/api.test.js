@@ -6,7 +6,10 @@ const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
 const sessionSubscribe = require("../helpers/session-subscribe");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").api;
+
+setupTest(__filename);
 
 describe("API", () => {
   describe("WEBPACK_SERVE environment variable", () => {
@@ -377,6 +380,9 @@ describe("API", () => {
         });
     });
 
+    /**
+     * @param n
+     */
     function createDummyServers(n) {
       const basePort = process.env.WEBPACK_DEV_SERVER_TEST_BASE_PORT || 30000;
       process.env.WEBPACK_DEV_SERVER_BASE_PORT = basePort;

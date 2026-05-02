@@ -5,9 +5,11 @@ const Server = require("../../lib/Server");
 const lazyCompilationMultipleEntriesConfig = require("../fixtures/lazy-compilation-multiple-entries/webpack.config");
 const lazyCompilationSingleEntryConfig = require("../fixtures/lazy-compilation-single-entry/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["lazy-compilation"];
 
-/* eslint-disable jest/no-disabled-tests */
+setupTest(__filename);
+
 describe("lazy compilation", () => {
   // TODO jest freeze due webpack do not close `eventsource`, we should uncomment this after fix it on webpack side
   it.skip("should work with single entry", async () => {

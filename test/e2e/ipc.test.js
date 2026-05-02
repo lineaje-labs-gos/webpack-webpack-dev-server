@@ -10,7 +10,10 @@ const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
 const sessionSubscribe = require("../helpers/session-subscribe");
+const { setupTest } = require("../helpers/test-runner");
 const port1 = require("../ports-map").ipc;
+
+setupTest(__filename);
 
 const webSocketServers = ["ws"];
 
@@ -32,6 +35,9 @@ describe("web socket server URL", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const proxy = httpProxy.createProxyServer({
           target: { socketPath: server.options.ipc },
@@ -126,6 +132,9 @@ describe("web socket server URL", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const proxy = httpProxy.createProxyServer({
           target: { socketPath: ipc },
@@ -202,7 +211,6 @@ describe("web socket server URL", () => {
     });
 
     // TODO un skip after implement new API
-    // eslint-disable-next-line jest/no-disabled-tests
     it.skip(`should work with the "ipc" option using "string" value and remove old ("${webSocketServer}")`, async () => {
       const isWindows = process.platform === "win32";
       const localRelative = path.relative(process.cwd(), `${os.tmpdir()}/`);
@@ -238,6 +246,9 @@ describe("web socket server URL", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const proxy = httpProxy.createProxyServer({
           target: { socketPath: ipc },

@@ -5,7 +5,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/simple-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").bonjour;
+
+setupTest(__filename);
 
 describe("bonjour option", () => {
   let mockPublish;

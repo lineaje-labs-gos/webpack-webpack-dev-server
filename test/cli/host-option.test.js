@@ -3,7 +3,10 @@
 const os = require("node:os");
 const Server = require("../../lib/Server");
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-host"];
+
+setupTest(__filename);
 
 const localIPv4 = Server.findIp("v4", false);
 const localIPv6 = Server.findIp("v6", false);
@@ -81,7 +84,6 @@ describe('"host" CLI option', () => {
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should work using "--host <IPv6>"', async () => {
     const { exitCode, stderr } = await testBin([
       "--port",
@@ -106,7 +108,6 @@ describe('"host" CLI option', () => {
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should work using "--host local-ip" take the first network found', async () => {
     const { exitCode, stderr } = await testBin([
       "--port",

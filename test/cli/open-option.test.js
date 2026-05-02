@@ -1,7 +1,10 @@
 "use strict";
 
 const { testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-open"];
+
+setupTest(__filename);
 
 describe('"open" CLI option', () => {
   it('should work using "--open"', async () => {

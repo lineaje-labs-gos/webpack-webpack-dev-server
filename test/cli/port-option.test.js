@@ -1,7 +1,10 @@
 "use strict";
 
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-port-option"];
+
+setupTest(__filename);
 
 describe('"port" CLI option', () => {
   it('should work using "--port <string>"', async () => {

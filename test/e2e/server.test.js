@@ -11,7 +11,10 @@ const { skipTestOnWindows } = require("../helpers/conditional-test");
 const customHTTP = require("../helpers/custom-http");
 const normalizeOptions = require("../helpers/normalize-options");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["server-option"];
+
+setupTest(__filename);
 
 const httpsCertificateDirectory = path.resolve(
   __dirname,

@@ -1,10 +1,11 @@
-/**
- * @jest-environment jsdom
- */
-
 "use strict";
 
+require("../../helpers/jsdom-env").install();
+
 const sendMessage = require("../../../client-src/utils/sendMessage").default;
+const { setupTest } = require("../../helpers/test-runner");
+
+setupTest(__filename);
 
 describe("'sendMessage' function", () => {
   afterEach(() => {

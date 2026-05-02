@@ -2,7 +2,10 @@
 
 const path = require("node:path");
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-watch-files"];
+
+setupTest(__filename);
 
 describe('"watchFiles" CLI option', () => {
   it('should work using "--watch-files <value>"', async () => {

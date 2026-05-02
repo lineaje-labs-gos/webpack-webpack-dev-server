@@ -6,7 +6,10 @@ const WebsocketServer = require("../../lib/servers/WebsocketServer");
 const defaultConfig = require("../fixtures/provide-plugin-default/webpack.config");
 const wsConfig = require("../fixtures/provide-plugin-ws-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["server-and-client-transport"];
+
+setupTest(__filename);
 
 describe("server and client transport", () => {
   it('should use default web socket server ("ws")', async () => {

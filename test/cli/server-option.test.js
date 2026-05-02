@@ -4,7 +4,10 @@ const path = require("node:path");
 const { rimraf } = require("rimraf");
 const Server = require("../../lib/Server");
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-server"];
+
+setupTest(__filename);
 
 const httpsCertificateDirectory = path.resolve(
   __dirname,

@@ -8,7 +8,10 @@ const oneWebTargetConfiguration = require("../fixtures/multi-compiler-one-config
 const twoWebTargetConfiguration = require("../fixtures/multi-compiler-two-configurations/webpack.config");
 const universalConfiguration = require("../fixtures/universal-compiler-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["multi-compiler"];
+
+setupTest(__filename);
 
 describe("multi compiler", () => {
   it("should work with one web target configuration and do nothing", async () => {

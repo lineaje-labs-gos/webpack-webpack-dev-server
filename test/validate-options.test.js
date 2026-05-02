@@ -7,6 +7,9 @@ const { Volume, createFsFromVolume } = require("memfs");
 const webpack = require("webpack");
 const Server = require("../lib/Server");
 const config = require("./fixtures/simple-config/webpack.config");
+const { setupTest } = require("./helpers/test-runner");
+
+setupTest(__filename);
 
 const httpsCertificateDirectory = path.join(
   __dirname,
@@ -559,6 +562,9 @@ describe("options", () => {
   });
 
   describe("validate", () => {
+    /**
+     * @param value
+     */
     function stringifyValue(value) {
       if (
         Array.isArray(value) ||
@@ -589,6 +595,11 @@ describe("options", () => {
       return value;
     }
 
+    /**
+     * @param type
+     * @param key
+     * @param value
+     */
     function createTestCase(type, key, value) {
       it(`should ${
         type === "success" ? "successfully validate" : "throw an error on"

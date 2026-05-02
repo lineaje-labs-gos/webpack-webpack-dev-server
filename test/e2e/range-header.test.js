@@ -4,7 +4,10 @@ const request = require("supertest");
 const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/static-config/webpack.config");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["range-header"];
+
+setupTest(__filename);
 
 describe("'Range' header", () => {
   let compiler;

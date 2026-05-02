@@ -6,7 +6,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const reloadConfig = require("../fixtures/reload-config-2/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").progress;
+
+setupTest(__filename);
 
 const cssFilePath = path.resolve(
   __dirname,

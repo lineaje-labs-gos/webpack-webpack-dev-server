@@ -5,7 +5,10 @@ const request = require("supertest");
 const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/simple-config/webpack.config");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").bundle;
+
+setupTest(__filename);
 
 describe("bundle", () => {
   describe("main.js bundled output", () => {

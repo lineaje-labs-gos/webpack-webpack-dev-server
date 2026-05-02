@@ -4,7 +4,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/simple-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["client-reconnect-option"];
+
+setupTest(__filename);
 
 describe("client.reconnect option", () => {
   describe("specified as true", () => {

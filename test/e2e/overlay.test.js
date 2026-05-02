@@ -9,7 +9,10 @@ const Server = require("../../lib/Server");
 const trustedTypesConfig = require("../fixtures/overlay-config/trusted-types.webpack.config");
 const config = require("../fixtures/overlay-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").overlay;
+
+setupTest(__filename);
 
 class ErrorPlugin {
   constructor(message, skipCounter) {

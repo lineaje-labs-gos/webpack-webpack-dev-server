@@ -6,8 +6,11 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/static-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const testServer = require("../helpers/test-server");
 const port = require("../ports-map")["static-directory-option"];
+
+setupTest(__filename);
 
 const staticDirectory = path.resolve(__dirname, "../fixtures/static-config");
 const publicDirectory = path.resolve(staticDirectory, "public");

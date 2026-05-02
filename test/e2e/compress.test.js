@@ -4,7 +4,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/simple-config-other/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["compress-option"];
+
+setupTest(__filename);
 
 describe("compress option", () => {
   describe("enabled by default when not specified", () => {

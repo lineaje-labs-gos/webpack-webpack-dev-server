@@ -1,14 +1,14 @@
-/**
- * @jest-environment jsdom
- * @jest-environment-options { "customExportConditions": ["main"] }
- */
-
 "use strict";
 
 const http = require("node:http");
 const express = require("express");
 const ws = require("ws");
+const { setupTest } = require("../../helpers/test-runner");
 const port = require("../../ports-map")["web-socket-client"];
+
+require("../../helpers/jsdom-env").install();
+
+setupTest(__filename);
 
 jest.setMock("../../../client-src/utils/log", {
   log: {

@@ -4,7 +4,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/mime-types-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["mime-types-option"];
+
+setupTest(__filename);
 
 describe("mimeTypes option", () => {
   describe("as an object with a remapped type", () => {

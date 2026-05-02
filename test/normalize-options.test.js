@@ -3,7 +3,10 @@
 const { klona } = require("klona/full");
 const webpack = require("webpack");
 const Server = require("../lib/Server");
+const { setupTest } = require("./helpers/test-runner");
 const port = require("./ports-map")["normalize-option"];
+
+setupTest(__filename);
 
 describe("normalize options", () => {
   const cases = [

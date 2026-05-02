@@ -6,7 +6,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const [port1, port2] = require("../ports-map")["allowed-hosts"];
+
+setupTest(__filename);
 
 const webSocketServers = ["ws"];
 
@@ -34,6 +37,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -106,6 +112,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -179,6 +188,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -253,6 +265,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -327,6 +342,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -402,6 +420,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -476,6 +497,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -555,6 +579,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -634,6 +661,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -714,6 +744,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -794,6 +827,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -874,6 +910,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -954,6 +993,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1037,6 +1079,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1117,6 +1162,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1197,6 +1245,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1279,6 +1330,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1360,6 +1414,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1440,6 +1497,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 
@@ -1524,6 +1584,9 @@ describe("allowed hosts", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 

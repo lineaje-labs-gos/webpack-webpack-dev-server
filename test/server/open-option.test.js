@@ -3,7 +3,10 @@
 const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/simple-config/webpack.config");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["open-option"];
+
+setupTest(__filename);
 
 const internalIPv4 = Server.findIp("v4", false);
 
@@ -25,7 +28,6 @@ describe('"open" option', () => {
     open.mockClear();
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   it.only("should work with unspecified host", async () => {
     const server = new Server(
       {

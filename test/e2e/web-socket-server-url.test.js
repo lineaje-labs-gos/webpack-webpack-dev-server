@@ -7,7 +7,10 @@ const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
 const sessionSubscribe = require("../helpers/session-subscribe");
+const { setupTest } = require("../helpers/test-runner");
 const [port1, port2] = require("../ports-map")["web-socket-server-url"];
+
+setupTest(__filename);
 
 const webSocketServers = ["ws"];
 
@@ -32,6 +35,9 @@ describe("web socket server URL", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
         app.use(
@@ -119,6 +125,9 @@ describe("web socket server URL", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
         app.use(
@@ -212,6 +221,9 @@ describe("web socket server URL", () => {
 
       await server.start();
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
         app.use(
@@ -303,6 +315,9 @@ describe("web socket server URL", () => {
       const resolvedHost = server.options.host;
       const resolvedPort = server.options.port;
 
+      /**
+       * @param callback
+       */
       function startProxy(callback) {
         const app = express();
 

@@ -1,7 +1,3 @@
-/**
- * @jest-environment node
- */
-
 "use strict";
 
 const path = require("node:path");
@@ -14,7 +10,10 @@ const multiCompilerConfig = require("../fixtures/multi-compiler-one-configuratio
 const reloadConfig = require("../fixtures/reload-config/webpack.config");
 const HTMLGeneratorPlugin = require("../helpers/html-generator-plugin");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["hot-and-live-reload"];
+
+setupTest(__filename);
 
 const cssFilePath = path.resolve(
   __dirname,

@@ -5,7 +5,10 @@ const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
 const sessionSubscribe = require("../helpers/session-subscribe");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["web-socket-server-test"];
+
+setupTest(__filename);
 
 describe("web socket server", () => {
   it("should work allow to disable", async () => {

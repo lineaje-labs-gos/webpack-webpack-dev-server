@@ -1,7 +1,10 @@
 "use strict";
 
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-history-api-fallback"];
+
+setupTest(__filename);
 
 describe('"historyApiFallback" CLI option', () => {
   it('should work using "--history-api-fallback"', async () => {

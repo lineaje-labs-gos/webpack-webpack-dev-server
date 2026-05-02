@@ -7,7 +7,10 @@ const config2 = require("../fixtures/historyapifallback-2-config/webpack.config"
 const config3 = require("../fixtures/historyapifallback-3-config/webpack.config");
 const config = require("../fixtures/historyapifallback-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["history-api-fallback-option"];
+
+setupTest(__filename);
 
 describe("historyApiFallback option", () => {
   describe("as boolean", () => {

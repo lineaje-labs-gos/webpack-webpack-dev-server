@@ -6,7 +6,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/watch-files-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["watch-files-option"];
+
+setupTest(__filename);
 
 const watchDir = path.resolve(
   __dirname,

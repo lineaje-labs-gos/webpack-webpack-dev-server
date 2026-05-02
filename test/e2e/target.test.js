@@ -7,7 +7,10 @@ const config = require("../fixtures/client-config/webpack.config");
 const workerConfig = require("../fixtures/worker-config/webpack.config");
 const workerConfigDevServerFalse = require("../fixtures/worker-config-dev-server-false/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map").target;
+
+setupTest(__filename);
 
 const sortByTerm = (data, term) =>
   data.sort((a, b) => (a.indexOf(term) < b.indexOf(term) ? -1 : 1));

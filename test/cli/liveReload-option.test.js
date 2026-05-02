@@ -1,7 +1,10 @@
 "use strict";
 
 const { testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-live-reload"];
+
+setupTest(__filename);
 
 describe('"liveReload" CLI option', () => {
   it('should work using "--live-reload"', async () => {

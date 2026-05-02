@@ -1,7 +1,10 @@
 "use strict";
 
 const { normalizeStderr, testBin } = require("../helpers/test-bin");
+const { setupTest } = require("../helpers/test-runner");
 const port = require("../ports-map")["cli-colors"];
+
+setupTest(__filename);
 
 const colorsDefaultStats = require.resolve(
   "../fixtures/cli-colors-default-stats/webpack.config",

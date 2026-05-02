@@ -4,7 +4,10 @@ const webpack = require("webpack");
 const Server = require("../../lib/Server");
 const config = require("../fixtures/client-config/webpack.config");
 const runBrowser = require("../helpers/run-browser");
+const { setupTest } = require("../helpers/test-runner");
 const [port1, port2] = require("../ports-map")["cross-origin-request"];
+
+setupTest(__filename);
 
 describe("cross-origin requests", () => {
   const devServerPort = port1;
