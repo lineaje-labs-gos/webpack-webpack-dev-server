@@ -4,6 +4,7 @@
 // Test files import from here, then call describe/it/expect/jest as before.
 // Snapshot state is wired per-file via the exported `setupSnapshots(__filename)`.
 
+const Module = require("node:module");
 const path = require("node:path");
 const nodeTest = require("node:test");
 const { expect } = require("expect");
@@ -142,11 +143,33 @@ function rememberOriginal(resolved) {
   }
 }
 /**
+ * Resolve a module path the way the caller's `require` would, so relative
+ * specifiers like `"../../../client-src/utils/log"` work from the test file
+ * that called us instead of being resolved against this helper's own path.
+ * @param modulePath
+ */
+function resolveFromCaller(modulePath) {
+  if (path.isAbsolute(modulePath) || !modulePath.startsWith(".")) {
+    return require.resolve(modulePath);
+  }
+  const stack = new Error("trace").stack.split("\n");
+  for (const line of stack) {
+    const match =
+      line.match(/\((.+?):\d+:\d+\)$/) || line.match(/at (.+?):\d+:\d+$/);
+    if (!match) continue;
+    const [, file] = match;
+    if (file === __filename || file.includes("node:")) continue;
+    return Module.createRequire(file).resolve(modulePath);
+  }
+  return require.resolve(modulePath);
+}
+
+/**
  * @param modulePath
  * @param mockExports
  */
 function setMock(modulePath, mockExports) {
-  const resolved = require.resolve(modulePath);
+  const resolved = resolveFromCaller(modulePath);
   rememberOriginal(resolved);
   require.cache[resolved] = {
     id: resolved,
@@ -290,14 +313,60 @@ const jest = {
   },
 };
 
+// Adapt Jest's `done`-callback style (`it("...", (done) => { ...; done(); })`)
+// to node:test, which passes a TestContext as the first arg instead of a done
+// callback. Heuristic: a non-async function with arity 1 is treated as a
+// done-callback test.
+/**
+ * @param body
+ */
+function adaptBody(body) {
+  if (typeof body !== "function") return body;
+  const isAsync = body.constructor && body.constructor.name === "AsyncFunction";
+  if (isAsync || body.length !== 1) return body;
+  return function adaptedBody(_t) {
+    return new Promise((resolve, reject) => {
+      /**
+       * @param err
+       */
+      function done(err) {
+        if (err) reject(err);
+        else resolve();
+      }
+      try {
+        const ret = body.call(this, done);
+        if (ret && typeof ret.then === "function") {
+          ret.then(resolve, reject);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    });
+  };
+}
+
 /**
  * @param itFn
  */
 function wrapIt(itFn) {
-  function wrapped(...args) {
-    return itFn(...args);
+  function wrapped(name, optsOrBody, body) {
+    if (typeof optsOrBody === "function") {
+      return itFn(name, adaptBody(optsOrBody));
+    }
+    if (typeof body === "function") {
+      return itFn(name, optsOrBody, adaptBody(body));
+    }
+    return itFn(name, optsOrBody);
   }
-  wrapped.only = itFn.only.bind(itFn);
+  wrapped.only = (name, optsOrBody, body) => {
+    if (typeof optsOrBody === "function") {
+      return itFn.only(name, adaptBody(optsOrBody));
+    }
+    if (typeof body === "function") {
+      return itFn.only(name, optsOrBody, adaptBody(body));
+    }
+    return itFn.only(name, optsOrBody);
+  };
   wrapped.skip = itFn.skip.bind(itFn);
   wrapped.todo = itFn.todo.bind(itFn);
   wrapped.each = (cases) => (name, body, opts) => {
@@ -311,7 +380,11 @@ function wrapIt(itFn) {
         return typeof next === "object" ? JSON.stringify(next) : String(next);
       });
       const argsForBody = Array.isArray(row) ? row : [row];
-      itFn(interpolated, opts, () => body(...argsForBody));
+      itFn(
+        interpolated,
+        opts,
+        adaptBody(() => body(...argsForBody)),
+      );
     }
   };
   return wrapped;
