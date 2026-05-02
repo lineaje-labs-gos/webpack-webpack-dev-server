@@ -1,20 +1,16 @@
-"use strict";
-
-module.exports = class WebSocketClient {
+export default (class WebSocketClient {
   constructor(url) {
     this.client = new WebSocket(url);
     this.client.onerror = (error) => {
       console.error(error);
     };
   }
-
   onOpen(f) {
     this.client.onopen = () => {
       console.log("open");
       f();
     };
   }
-
   onClose(f) {
     this.client.onclose = () => {
       console.log("close");
@@ -30,4 +26,4 @@ module.exports = class WebSocketClient {
       f(e.data);
     };
   }
-};
+});

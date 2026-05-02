@@ -1,17 +1,23 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "graceful-fs";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import HTMLGeneratorPlugin from "../helpers/html-generator-plugin.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const fs = require("graceful-fs");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const HTMLGeneratorPlugin = require("../helpers/html-generator-plugin");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map").logging;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map.logging;
 
 describe("logging", () => {
-  const webSocketServers = [{ webSocketServer: "ws" }];
-
+  const webSocketServers = [
+    {
+      webSocketServer: "ws",
+    },
+  ];
   const cases = [
     {
       title: "should work and log message about live reloading is enabled",
@@ -184,45 +190,37 @@ describe("logging", () => {
       },
     },
   ];
-
   for (const webSocketServer of webSocketServers) {
     for (const testCase of cases) {
-      it(`${testCase.title} (${
-        webSocketServer.webSocketServer || "default"
-      })`, async () => {
-        const compiler = webpack({ ...config, ...testCase.webpackOptions });
+      it(`${testCase.title} (${webSocketServer.webSocketServer || "default"})`, async () => {
+        const compiler = webpack({
+          ...config,
+          ...testCase.webpackOptions,
+        });
         const devServerOptions = {
           port,
           ...testCase.devServerOptions,
         };
         const server = new Server(devServerOptions, compiler);
-
         await server.start();
-
         const { page, browser } = await runBrowser();
-
         try {
           const consoleMessages = [];
-
           page.on("console", (message) => {
             consoleMessages.push(message);
           });
-
           await page.goto(`http://localhost:${port}/`, {
             waitUntil: "networkidle0",
           });
-
           if (testCase.devServerOptions && testCase.devServerOptions.static) {
             fs.writeFileSync(
               path.join(testCase.devServerOptions.static, "./foo.txt"),
               "Text",
             );
-
             await page.waitForNavigation({
               waitUntil: "networkidle0",
             });
           }
-
           expect(
             consoleMessages.map((message) =>
               message

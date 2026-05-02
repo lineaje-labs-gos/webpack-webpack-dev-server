@@ -1,10 +1,10 @@
-"use strict";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/mime-types-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/mime-types-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["mime-types-option"];
+const port = _ports_map["mime-types-option"];
 
 describe("mimeTypes option", () => {
   describe("as an object with a remapped type", () => {
@@ -17,7 +17,6 @@ describe("mimeTypes option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           devMiddleware: {
@@ -29,11 +28,8 @@ describe("mimeTypes option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -51,21 +47,16 @@ describe("mimeTypes option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -80,7 +71,6 @@ describe("mimeTypes option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           devMiddleware: {
@@ -92,11 +82,8 @@ describe("mimeTypes option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -114,21 +101,16 @@ describe("mimeTypes option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/file.custom`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });

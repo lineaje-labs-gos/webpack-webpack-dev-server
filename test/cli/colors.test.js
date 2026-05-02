@@ -1,8 +1,9 @@
-"use strict";
+import { createRequire } from "node:module";
+import { normalizeStderr, testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { normalizeStderr, testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-colors"];
-
+const require = createRequire(import.meta.url);
+const port = _ports_map["cli-colors"];
 const colorsDefaultStats = require.resolve(
   "../fixtures/cli-colors-default-stats/webpack.config",
 );
@@ -21,25 +22,34 @@ describe("colors", () => {
       "--color",
       colorsDefaultStats,
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
     expect(stderr).toContain("\u001B[");
   });
 
   it('should work use colors using "--color"', async () => {
     const { exitCode, stderr } = await testBin(["--port", port, "--color"]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
     expect(stderr).toContain("\u001B[");
   });
 
   it('should work do not use colors using "--no-color"', async () => {
     const { exitCode, stderr } = await testBin(["--port", port, "--no-color"]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
     expect(stderr).not.toContain("\u001B[");
   });
 
@@ -50,9 +60,12 @@ describe("colors", () => {
       "--config",
       colorsEnabled,
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
     expect(stderr).toContain("\u001B[");
   });
 
@@ -63,9 +76,12 @@ describe("colors", () => {
       "--config",
       colorsDisabled,
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
     expect(stderr).not.toContain("\u001B[");
   });
 });

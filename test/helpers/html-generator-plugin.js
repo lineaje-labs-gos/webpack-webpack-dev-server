@@ -1,5 +1,3 @@
-"use strict";
-
 const HTMLContentForIndex = `
 <!DOCTYPE html>
 <html>
@@ -13,7 +11,6 @@ const HTMLContentForIndex = `
   </body>
 </html>
 `;
-
 const HTMLContentForAssets = (assetName) => `
 <!DOCTYPE html>
 <html>
@@ -27,7 +24,6 @@ const HTMLContentForAssets = (assetName) => `
   </body>
 </html>
 `;
-
 const HTMLContentForTest = `
 <!DOCTYPE html>
 <html>
@@ -41,13 +37,11 @@ const HTMLContentForTest = `
 </html>
 `;
 
-module.exports = class HTMLGeneratorPlugin {
+export default (class HTMLGeneratorPlugin {
   apply(compiler) {
     const pluginName = "html-generator-plugin";
-
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       const { RawSource } = compiler.webpack.sources;
-
       compilation.hooks.processAssets.tap(
         {
           name: pluginName,
@@ -57,13 +51,10 @@ module.exports = class HTMLGeneratorPlugin {
           const indexSource = new RawSource(HTMLContentForIndex);
           const testSource = new RawSource(HTMLContentForTest);
           const assets = compilation.getAssets();
-
           compilation.emitAsset("index.html", indexSource);
           compilation.emitAsset("test.html", testSource);
-
           for (const asset of assets) {
             const assetName = asset.name;
-
             if (assetName !== "main.js") {
               const assetSource = new RawSource(
                 // eslint-disable-next-line new-cap
@@ -79,4 +70,4 @@ module.exports = class HTMLGeneratorPlugin {
       );
     });
   }
-};
+});

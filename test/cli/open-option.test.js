@@ -1,12 +1,11 @@
-"use strict";
+import { testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-open"];
+const port = _ports_map["cli-open"];
 
 describe('"open" CLI option', () => {
   it('should work using "--open"', async () => {
     const { exitCode } = await testBin(["--port", port, "--open"]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -17,7 +16,6 @@ describe('"open" CLI option', () => {
       "--open",
       "/index.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -29,13 +27,11 @@ describe('"open" CLI option', () => {
       "/first.html",
       "second.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
   it('should work using "--no-open"', async () => {
     const { exitCode } = await testBin(["--no-open", "--port", port]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -47,7 +43,6 @@ describe('"open" CLI option', () => {
       "--open",
       "/third.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -59,7 +54,6 @@ describe('"open" CLI option', () => {
       "--open-target",
       "<url>",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -71,7 +65,6 @@ describe('"open" CLI option', () => {
       "--open-target",
       "/third.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -82,7 +75,6 @@ describe('"open" CLI option', () => {
       "--open-app-name",
       "google-chrome",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -94,7 +86,6 @@ describe('"open" CLI option', () => {
       "--open-app-name",
       "firefox",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -105,7 +96,6 @@ describe('"open" CLI option', () => {
       "--open-target",
       "index.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -117,7 +107,6 @@ describe('"open" CLI option', () => {
       "--open-target",
       "first.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -129,7 +118,6 @@ describe('"open" CLI option', () => {
       "/first.html",
       "second.html",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -142,7 +130,6 @@ describe('"open" CLI option', () => {
       "--open-app-name",
       "google-chrome",
     ]);
-
     expect(exitCode).toBe(0);
   });
 });

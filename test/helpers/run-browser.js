@@ -1,8 +1,5 @@
-"use strict";
-
-const puppeteer = require("puppeteer");
-const { puppeteerArgs } = require("./puppeteer-constants");
-
+import { launch } from "puppeteer";
+import { puppeteerArgs } from "./puppeteer-constants.js";
 /** @typedef {import('puppeteer').Browser} Browser */
 /** @typedef {import('puppeteer').Page} Page */
 /** @typedef {import('puppeteer').Device} Device */
@@ -23,7 +20,6 @@ function runPage(browser, device) {
    * @type {Page}
    */
   let page;
-
   const options = {
     viewport: {
       width: 500,
@@ -32,13 +28,11 @@ function runPage(browser, device) {
     userAgent: "",
     ...device,
   };
-
   return Promise.resolve()
     .then(() => browser.newPage())
     .then((newPage) => {
       page = newPage;
       page.emulate(options);
-
       return page.setRequestInterception(true);
     })
     .then(() => {
@@ -57,7 +51,6 @@ function runPage(browser, device) {
           );
         }
       });
-
       return page;
     });
 }
@@ -76,28 +69,27 @@ function runBrowser(device) {
      * @type {import('puppeteer').Browser}
      */
     let browser;
-
-    puppeteer
-      .launch({
-        headless: "new",
-        // because of invalid localhost certificate
-        acceptInsecureCerts: true,
-        // args come from: https://github.com/alixaxel/chrome-aws-lambda/blob/master/source/index.js
-        args: puppeteerArgs,
-      })
+    launch({
+      headless: "new",
+      // because of invalid localhost certificate
+      acceptInsecureCerts: true,
+      // args come from: https://github.com/alixaxel/chrome-aws-lambda/blob/master/source/index.js
+      args: puppeteerArgs,
+    })
       .then((launchedBrowser) => {
         browser = launchedBrowser;
-
         return runPage(launchedBrowser, device);
       })
       .then((newPage) => {
         page = newPage;
-
-        resolve({ page, browser });
+        resolve({
+          page,
+          browser,
+        });
       })
       .catch(reject);
   });
 }
 
-module.exports = runBrowser;
-module.exports.runPage = runPage;
+export default runBrowser;
+export { runPage };

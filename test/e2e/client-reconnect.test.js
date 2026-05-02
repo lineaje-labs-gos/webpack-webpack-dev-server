@@ -1,10 +1,10 @@
-"use strict";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/simple-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/simple-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["client-reconnect-option"];
+const port = _ports_map["client-reconnect-option"];
 
 describe("client.reconnect option", () => {
   describe("specified as true", () => {
@@ -17,13 +17,17 @@ describe("client.reconnect option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
-      server = new Server({ port, client: { reconnect: true } }, compiler);
-
+      server = new Server(
+        {
+          port,
+          client: {
+            reconnect: true,
+          },
+        },
+        compiler,
+      );
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -40,33 +44,26 @@ describe("client.reconnect option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       try {
         expect(response.status()).toMatchSnapshot("response status");
       } finally {
         await server.stop();
       }
-
       let interval;
-
       await new Promise((resolve) => {
         interval = setInterval(() => {
           const retryingMessages = consoleMessages.filter((message) =>
             message.text().includes("Trying to reconnect..."),
           );
-
           if (retryingMessages.length >= 5) {
             clearInterval(interval);
-
             resolve();
           }
         }, 1000);
       });
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -81,13 +78,17 @@ describe("client.reconnect option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
-      server = new Server({ port, client: { reconnect: false } }, compiler);
-
+      server = new Server(
+        {
+          port,
+          client: {
+            reconnect: false,
+          },
+        },
+        compiler,
+      );
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -104,11 +105,9 @@ describe("client.reconnect option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       try {
         expect(response.status()).toMatchSnapshot("response status");
       } finally {
@@ -124,11 +123,9 @@ describe("client.reconnect option", () => {
           1000 * 2 ** 3,
         );
       });
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -143,13 +140,17 @@ describe("client.reconnect option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
-      server = new Server({ port, client: { reconnect: 2 } }, compiler);
-
+      server = new Server(
+        {
+          port,
+          client: {
+            reconnect: 2,
+          },
+        },
+        compiler,
+      );
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -166,11 +167,9 @@ describe("client.reconnect option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       try {
         expect(response.status()).toMatchSnapshot("response status");
       } finally {
@@ -186,11 +185,9 @@ describe("client.reconnect option", () => {
           1000 * 2 ** 3,
         );
       });
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });

@@ -1,18 +1,15 @@
-"use strict";
+import http from "node:http";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const http = require("node:http");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map").host;
-
+const port = _ports_map.host;
 const ipv4 = Server.findIp("v4", false);
 const ipv6 = Server.findIp("v6", false);
-
 async function getAddress(host, hostname) {
   let address;
-
   if (
     typeof host === "undefined" ||
     (typeof host === "string" && (host === "<not-specified>" || host === "::"))
@@ -29,20 +26,22 @@ async function getAddress(host, hostname) {
       res.setHeader("Content-Type", "text/plain");
       res.end("Hello World\n");
     });
-
     await new Promise((resolve) => {
-      server.listen({ host: "localhost", port: 23100 }, resolve);
+      server.listen(
+        {
+          host: "localhost",
+          port: 23100,
+        },
+        resolve,
+      );
     });
-
     address = server.address().address;
-
     await new Promise((resolve, reject) => {
       server.close((err) => {
         if (err) {
           reject(err);
           return;
         }
-
         resolve();
       });
     });
@@ -51,14 +50,14 @@ async function getAddress(host, hostname) {
   } else {
     address = hostname;
   }
-
-  return { address };
+  return {
+    address,
+  };
 }
 
 describe("host", () => {
   const hosts = [
     "<not-specified>",
-
     undefined,
     "0.0.0.0",
     "::",
@@ -69,16 +68,15 @@ describe("host", () => {
     "local-ipv4",
     "local-ipv6",
   ];
-
   for (const host of hosts) {
     it(`should work using "${host}" host and port as number`, async () => {
       const compiler = webpack(config);
-      const devServerOptions = { port };
-
+      const devServerOptions = {
+        port,
+      };
       if (host !== "<not-specified>") {
         devServerOptions.host = host;
       }
-
       if (
         host === "<not-specified>" ||
         typeof host === "undefined" ||
@@ -88,11 +86,8 @@ describe("host", () => {
       ) {
         devServerOptions.allowedHosts = "all";
       }
-
       const server = new Server(devServerOptions, compiler);
-
       let hostname = host;
-
       if (hostname === "<not-specified>" || typeof hostname === "undefined") {
         // If host is omitted, the server will accept connections on the unspecified IPv6 address (::) when IPv6 is available, or the unspecified IPv4 address (0.0.0.0) otherwise.
         hostname = ipv6 ? `[${ipv6}]` : ipv4;
@@ -109,19 +104,14 @@ describe("host", () => {
         // For test env where network ipv6 doesn't work
         hostname = ipv6 ? `[${ipv6}]` : "[::1]";
       }
-
       await server.start();
-
       expect(server.server.address()).toMatchObject(
         await getAddress(host, hostname),
       );
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -129,15 +119,12 @@ describe("host", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${hostname}:${port}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
-
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         await browser.close();
@@ -147,12 +134,12 @@ describe("host", () => {
 
     it(`should work using "${host}" host and port as string`, async () => {
       const compiler = webpack(config);
-      const devServerOptions = { port: `${port}` };
-
+      const devServerOptions = {
+        port: `${port}`,
+      };
       if (host !== "<not-specified>") {
         devServerOptions.host = host;
       }
-
       if (
         host === "<not-specified>" ||
         typeof host === "undefined" ||
@@ -162,11 +149,8 @@ describe("host", () => {
       ) {
         devServerOptions.allowedHosts = "all";
       }
-
       const server = new Server(devServerOptions, compiler);
-
       let hostname = host;
-
       if (hostname === "<not-specified>" || typeof hostname === "undefined") {
         // If host is omitted, the server will accept connections on the unspecified IPv6 address (::) when IPv6 is available, or the unspecified IPv4 address (0.0.0.0) otherwise.
         hostname = ipv6 ? `[${ipv6}]` : ipv4;
@@ -183,19 +167,14 @@ describe("host", () => {
         // For test env where network ipv6 doesn't work
         hostname = ipv6 ? `[${ipv6}]` : "[::1]";
       }
-
       await server.start();
-
       expect(server.server.address()).toMatchObject(
         await getAddress(host, hostname),
       );
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -203,15 +182,12 @@ describe("host", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${hostname}:${port}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
-
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         await browser.close();
@@ -221,15 +197,13 @@ describe("host", () => {
 
     it(`should work using "${host}" host and "auto" port`, async () => {
       const compiler = webpack(config);
-
       process.env.WEBPACK_DEV_SERVER_BASE_PORT = port;
-
-      const devServerOptions = { port: "auto" };
-
+      const devServerOptions = {
+        port: "auto",
+      };
       if (host !== "<not-specified>") {
         devServerOptions.host = host;
       }
-
       if (
         host === "<not-specified>" ||
         typeof host === "undefined" ||
@@ -239,11 +213,8 @@ describe("host", () => {
       ) {
         devServerOptions.allowedHosts = "all";
       }
-
       const server = new Server(devServerOptions, compiler);
-
       let hostname = host;
-
       if (hostname === "<not-specified>" || typeof hostname === "undefined") {
         // If host is omitted, the server will accept connections on the unspecified IPv6 address (::) when IPv6 is available, or the unspecified IPv4 address (0.0.0.0) otherwise.
         hostname = ipv6 ? `[${ipv6}]` : ipv4;
@@ -260,20 +231,15 @@ describe("host", () => {
         // For test env where network ipv6 doesn't work
         hostname = ipv6 ? `[${ipv6}]` : "[::1]";
       }
-
       await server.start();
-
       expect(server.server.address()).toMatchObject(
         await getAddress(host, hostname),
       );
-
       const address = server.server.address();
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -281,19 +247,15 @@ describe("host", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${hostname}:${address.port}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
-
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         delete process.env.WEBPACK_DEV_SERVER_BASE_PORT;
-
         await browser.close();
         await server.stop();
       }

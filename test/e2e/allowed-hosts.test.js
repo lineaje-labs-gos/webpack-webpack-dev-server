@@ -1,13 +1,12 @@
-"use strict";
+import express from "express";
+import { createProxyMiddleware } from "http-proxy-middleware";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const express = require("express");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const [port1, port2] = require("../ports-map")["allowed-hosts"];
-
+const [port1, port2] = _ports_map["allowed-hosts"];
 const webSocketServers = ["ws"];
 
 describe("allowed hosts", () => {
@@ -17,7 +16,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -31,12 +29,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -46,21 +41,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -68,18 +59,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -90,7 +78,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -103,12 +90,9 @@ describe("allowed hosts", () => {
         host: devServerHost,
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -118,22 +102,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -141,18 +120,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -163,7 +139,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -176,12 +151,9 @@ describe("allowed hosts", () => {
         host: devServerHost,
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -191,22 +163,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -214,18 +181,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -236,7 +200,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -250,12 +213,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -265,22 +225,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -288,18 +243,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -310,7 +262,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -324,12 +275,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -339,22 +287,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -362,18 +305,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://[${proxyHost}]:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -385,7 +325,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = IPv4;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -399,12 +338,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -414,22 +350,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -437,18 +368,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -459,7 +387,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -473,12 +400,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -493,22 +417,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -516,18 +435,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -538,7 +454,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -552,12 +467,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -572,22 +484,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -595,18 +502,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -617,7 +521,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -631,12 +534,9 @@ describe("allowed hosts", () => {
         allowedHosts: "all",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -652,22 +552,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -675,18 +570,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -697,7 +589,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -711,12 +602,9 @@ describe("allowed hosts", () => {
         allowedHosts: ["all"],
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -732,22 +620,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -755,18 +638,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -777,7 +657,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -791,12 +670,9 @@ describe("allowed hosts", () => {
         allowedHosts: "my-test-origin.com",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -812,22 +688,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -835,18 +706,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -857,7 +725,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -871,12 +738,9 @@ describe("allowed hosts", () => {
         allowedHosts: ".my-test-origin.com",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -892,22 +756,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -915,18 +774,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -937,7 +793,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -951,12 +806,9 @@ describe("allowed hosts", () => {
         allowedHosts: ".my-test-origin.com",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -975,22 +827,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -998,18 +845,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1020,7 +864,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1034,12 +877,9 @@ describe("allowed hosts", () => {
         allowedHosts: ["my-test-origin.com"],
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1055,22 +895,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1078,18 +913,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1100,7 +932,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1114,12 +945,9 @@ describe("allowed hosts", () => {
         allowedHosts: ["192.168.1.1"],
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1135,22 +963,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1158,18 +981,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("(work) console messages");
         expect(pageErrors).toMatchSnapshot("(work) page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1180,7 +1000,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1194,12 +1013,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1215,22 +1031,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1238,18 +1049,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1260,7 +1068,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1276,12 +1083,9 @@ describe("allowed hosts", () => {
         server: "https",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1298,22 +1102,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1321,18 +1120,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1343,7 +1139,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1357,12 +1152,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1378,22 +1170,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1401,18 +1188,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("console messages");
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1423,7 +1207,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1437,12 +1220,9 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1459,22 +1239,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1482,13 +1257,10 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         const html = await page.content();
-
         expect(html).toMatchSnapshot("html");
         expect(
           consoleMessages.map((message) => message.text()),
@@ -1496,7 +1268,6 @@ describe("allowed hosts", () => {
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1507,7 +1278,6 @@ describe("allowed hosts", () => {
       const devServerPort = port1;
       const proxyHost = devServerHost;
       const proxyPort = port2;
-
       const compiler = webpack(config);
       const devServerOptions = {
         client: {
@@ -1521,12 +1291,9 @@ describe("allowed hosts", () => {
         allowedHosts: ["192.168.1.1"],
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const app = express();
-
         app.use(
           "/",
           createProxyMiddleware({
@@ -1542,22 +1309,17 @@ describe("allowed hosts", () => {
             logger: server.logger,
           }),
         );
-
         return app.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -1565,18 +1327,15 @@ describe("allowed hosts", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot("(work) console messages");
         expect(pageErrors).toMatchSnapshot("(work) page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -1607,17 +1366,12 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
         port: port1,
       };
-
       const headers = {
         host: "localhost",
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1625,21 +1379,16 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://127.0.0.1:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       if (!server.isValidHost(headers, "host")) {
         throw new Error("Validation didn't fail");
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -1648,17 +1397,12 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
         port: port1,
       };
-
       const headers = {
         host: "app.localhost",
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1666,21 +1410,16 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://127.0.0.1:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       if (!server.isValidHost(headers, "host")) {
         throw new Error("Validation didn't fail");
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -1691,17 +1430,12 @@ describe("allowed hosts", () => {
         allowedHosts: "auto",
         port: port1,
       };
-
       const headers = {
         host: networkIP,
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1709,21 +1443,16 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://${networkIP}:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       if (!server.isValidHost(headers, "host")) {
         throw new Error("Validation didn't fail");
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -1735,17 +1464,12 @@ describe("allowed hosts", () => {
           webSocketURL: "ws://test.host:80",
         },
       };
-
       const headers = {
         host: "test.host",
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1753,21 +1477,16 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://127.0.0.1:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       if (!server.isValidHost(headers, "host")) {
         throw new Error("Validation didn't fail");
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -1779,13 +1498,9 @@ describe("allowed hosts", () => {
       const headers = {
         host: "bad.host",
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1793,21 +1508,16 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://127.0.0.1:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       if (!server.isValidHost(headers, "host")) {
         throw new Error("Validation didn't fail");
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -1817,13 +1527,9 @@ describe("allowed hosts", () => {
         allowedHosts: tests,
         port: port1,
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1831,25 +1537,21 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://127.0.0.1:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       for (const test of tests) {
-        const headers = { host: test };
-
+        const headers = {
+          host: test,
+        };
         if (!server.isValidHost(headers, "host")) {
           throw new Error("Validation didn't fail");
         }
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -1858,13 +1560,9 @@ describe("allowed hosts", () => {
         allowedHosts: [".example.com"],
         port: port1,
       };
-
       server = new Server(options, compiler);
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -1872,11 +1570,9 @@ describe("allowed hosts", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://127.0.0.1:${port1}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       const tests = [
         "www.example.com",
         "subdomain.example.com",
@@ -1885,21 +1581,18 @@ describe("allowed hosts", () => {
         "example.com:80",
         "subdomain.example.com:80",
       ];
-
       for (const test of tests) {
-        const headers = { host: test };
-
+        const headers = {
+          host: test,
+        };
         if (!server.isValidHost(headers, "host")) {
           throw new Error("Validation didn't fail");
         }
       }
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });

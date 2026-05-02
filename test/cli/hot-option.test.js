@@ -1,7 +1,7 @@
-"use strict";
+import { testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-hot"];
+const port = _ports_map["cli-hot"];
 
 describe('"hot" CLI option', () => {
   it('should work using "--hot"', async () => {
@@ -11,7 +11,6 @@ describe('"hot" CLI option', () => {
         outputKillStr: /compiled successfully/,
       },
     );
-
     expect(exitCode).toBe(0);
     expect(stdout).toContain("webpack/hot/dev-server.js");
   });
@@ -23,7 +22,6 @@ describe('"hot" CLI option', () => {
         outputKillStr: /compiled successfully/,
       },
     );
-
     expect(exitCode).toBe(0);
     expect(stdout).not.toContain("webpack/hot/dev-server.js");
   });
@@ -35,7 +33,6 @@ describe('"hot" CLI option', () => {
         outputKillStr: /compiled successfully/,
       },
     );
-
     expect(exitCode).toBe(0);
     expect(stdout).toContain("/hot/only-dev-server.js");
   });

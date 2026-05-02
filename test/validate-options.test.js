@@ -1,21 +1,31 @@
-"use strict";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import connect from "connect";
+import gracefulFs from "graceful-fs";
 
-const os = require("node:os");
-const path = require("node:path");
-const { readFileSync } = require("graceful-fs");
-const { Volume, createFsFromVolume } = require("memfs");
-const webpack = require("webpack");
-const Server = require("../lib/Server");
-const config = require("./fixtures/simple-config/webpack.config");
+import { Volume, createFsFromVolume } from "memfs";
+import webpack from "webpack";
+import Server from "../lib/Server.js";
+import config from "./fixtures/simple-config/webpack.config.js";
 
+const { readFileSync } = gracefulFs;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const httpsCertificateDirectory = path.join(
   __dirname,
   "./fixtures/https-certificate",
 );
-
 const tests = {
   bonjour: {
-    success: [false, true, { type: "https" }],
+    success: [
+      false,
+      true,
+      {
+        type: "https",
+      },
+    ],
     failure: [""],
   },
   client: {
@@ -74,19 +84,29 @@ const tests = {
         webSocketURL: "ws://localhost:8080",
       },
       {
-        webSocketURL: { hostname: "localhost" },
+        webSocketURL: {
+          hostname: "localhost",
+        },
       },
       {
-        webSocketURL: { port: 8080 },
+        webSocketURL: {
+          port: 8080,
+        },
       },
       {
-        webSocketURL: { port: "8080" },
+        webSocketURL: {
+          port: "8080",
+        },
       },
       {
-        webSocketURL: { pathname: "" },
+        webSocketURL: {
+          pathname: "",
+        },
       },
       {
-        webSocketURL: { pathname: "/my-path/" },
+        webSocketURL: {
+          pathname: "/my-path/",
+        },
       },
       {
         webSocketURL: {
@@ -96,7 +116,10 @@ const tests = {
         },
       },
       {
-        webSocketURL: { username: "username", password: "password" },
+        webSocketURL: {
+          username: "username",
+          password: "password",
+        },
       },
     ],
     failure: [
@@ -138,22 +161,37 @@ const tests = {
         webSocketTransport: true,
       },
       {
-        webSocketURL: { hostname: true, pathname: "", port: 8080 },
+        webSocketURL: {
+          hostname: true,
+          pathname: "",
+          port: 8080,
+        },
       },
       {
-        webSocketURL: { pathname: true },
+        webSocketURL: {
+          pathname: true,
+        },
       },
       {
-        webSocketURL: { port: true },
+        webSocketURL: {
+          port: true,
+        },
       },
       {
-        webSocketURL: { hostname: "" },
+        webSocketURL: {
+          hostname: "",
+        },
       },
       {
-        webSocketURL: { port: "" },
+        webSocketURL: {
+          port: "",
+        },
       },
       {
-        webSocketURL: { username: 123, password: 976 },
+        webSocketURL: {
+          username: 123,
+          password: 976,
+        },
       },
     ],
   },
@@ -170,8 +208,29 @@ const tests = {
     failure: [true, false, 123, [], [""]],
   },
   headers: {
-    success: [{}, { foo: "bar" }, () => {}, [{ key: "foo", value: "bar" }]],
-    failure: [false, 1, [], [{ foo: "bar" }]],
+    success: [
+      {},
+      {
+        foo: "bar",
+      },
+      () => {},
+      [
+        {
+          key: "foo",
+          value: "bar",
+        },
+      ],
+    ],
+    failure: [
+      false,
+      1,
+      [],
+      [
+        {
+          foo: "bar",
+        },
+      ],
+    ],
   },
   historyApiFallback: {
     success: [{}, true],
@@ -203,22 +262,77 @@ const tests = {
       "foo",
       [],
       ["foo", "bar"],
-      [{ app: "google-chrome" }],
-      [{ app: "google-chrome" }, { app: "firefox" }],
-      [{ target: "foo", app: "google-chrome" }, { app: "firefox" }],
-      [{ target: ["foo", "bar"], app: "google-chrome" }, { app: "firefox" }],
-      { target: "foo" },
-      { target: ["foo", "bar"] },
-      { app: "google-chrome" },
-      { app: { name: "google-chrome", arguments: ["--incognito"] } },
-      { target: "foo", app: "google-chrome" },
+      [
+        {
+          app: "google-chrome",
+        },
+      ],
+      [
+        {
+          app: "google-chrome",
+        },
+        {
+          app: "firefox",
+        },
+      ],
+      [
+        {
+          target: "foo",
+          app: "google-chrome",
+        },
+        {
+          app: "firefox",
+        },
+      ],
+      [
+        {
+          target: ["foo", "bar"],
+          app: "google-chrome",
+        },
+        {
+          app: "firefox",
+        },
+      ],
+      {
+        target: "foo",
+      },
       {
         target: ["foo", "bar"],
-        app: { name: "google-chrome", arguments: ["--incognito"] },
+      },
+      {
+        app: "google-chrome",
+      },
+      {
+        app: {
+          name: "google-chrome",
+          arguments: ["--incognito"],
+        },
+      },
+      {
+        target: "foo",
+        app: "google-chrome",
+      },
+      {
+        target: ["foo", "bar"],
+        app: {
+          name: "google-chrome",
+          arguments: ["--incognito"],
+        },
       },
       {},
     ],
-    failure: ["", { foo: "bar" }, { target: 90 }, { app: true }],
+    failure: [
+      "",
+      {
+        foo: "bar",
+      },
+      {
+        target: 90,
+      },
+      {
+        app: true,
+      },
+    ],
   },
   port: {
     success: ["20000", 20001, "auto", 0, 1, 65535],
@@ -432,10 +546,10 @@ const tests = {
   },
   app: {
     success: [
-      () => require("connect")(),
+      () => connect(),
       async () =>
         new Promise((resolve) => {
-          resolve(require("connect")());
+          resolve(connect());
         }),
     ],
     failure: ["test", false],
@@ -530,9 +644,21 @@ const tests = {
     success: [
       "dir",
       ["one-dir", "two-dir"],
-      { paths: ["dir"] },
-      { paths: ["dir"], options: { usePolling: true } },
-      [{ paths: ["one-dir"] }, "two-dir"],
+      {
+        paths: ["dir"],
+      },
+      {
+        paths: ["dir"],
+        options: {
+          usePolling: true,
+        },
+      },
+      [
+        {
+          paths: ["one-dir"],
+        },
+        "two-dir",
+      ],
     ],
     failure: [
       false,
@@ -572,7 +698,6 @@ describe("options", () => {
           ) {
             return "<Buffer>";
           }
-
           if (typeof replacedValue === "string") {
             replacedValue = replacedValue
               .replaceAll("\\", "/")
@@ -581,30 +706,26 @@ describe("options", () => {
                 "<cwd>",
               );
           }
-
           return replacedValue;
         });
       }
-
       return value;
     }
-
     function createTestCase(type, key, value) {
-      it(`should ${
-        type === "success" ? "successfully validate" : "throw an error on"
-      } the "${key}" option with '${stringifyValue(
-        value,
-      )}' value`, async () => {
+      it(`should ${type === "success" ? "successfully validate" : "throw an error on"} the "${key}" option with '${stringifyValue(value)}' value`, async () => {
         const compiler = webpack(config);
         let thrownError;
-
         try {
           // eslint-disable-next-line no-new
-          new Server({ [key]: value }, compiler);
+          new Server(
+            {
+              [key]: value,
+            },
+            compiler,
+          );
         } catch (error) {
           thrownError = error;
         }
-
         if (type === "success") {
           expect(thrownError).toBeUndefined();
         } else {
@@ -613,13 +734,11 @@ describe("options", () => {
         }
       });
     }
-
     const memfs = createFsFromVolume(new Volume());
 
     // We need to patch memfs
     // https://github.com/webpack/webpack-dev-middleware#fs
     memfs.join = path.join;
-
     for (const [key, values] of Object.entries(tests)) {
       for (const type of Object.keys(values)) {
         for (const value of values[type]) {

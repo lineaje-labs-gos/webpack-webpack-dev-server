@@ -1,11 +1,11 @@
-"use strict";
+import os from "node:os";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/simple-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const os = require("node:os");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/simple-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map").bonjour;
+const port = _ports_map.bonjour;
 
 describe("bonjour option", () => {
   let mockPublish;
@@ -36,15 +36,16 @@ describe("bonjour option", () => {
           destroy: mockDestroy,
         })),
       }));
-
       compiler = webpack(config);
-
-      server = new Server({ port, bonjour: true }, compiler);
-
+      server = new Server(
+        {
+          port,
+          bonjour: true,
+        },
+        compiler,
+      );
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -52,7 +53,6 @@ describe("bonjour option", () => {
     afterEach(async () => {
       await browser.close();
       await server.stop();
-
       mockPublish.mockReset();
       mockUnpublishAll.mockReset();
       mockDestroy.mockReset();
@@ -66,29 +66,22 @@ describe("bonjour option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(mockPublish).toHaveBeenCalledTimes(1);
-
       expect(mockPublish).toHaveBeenCalledWith({
         name: `Webpack Dev Server ${os.hostname()}:${port}`,
         port,
         type: "http",
         subtypes: ["webpack"],
       });
-
       expect(mockUnpublishAll).toHaveBeenCalledTimes(0);
       expect(mockDestroy).toHaveBeenCalledTimes(0);
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -109,15 +102,17 @@ describe("bonjour option", () => {
           destroy: mockDestroy,
         })),
       }));
-
       compiler = webpack(config);
-
-      server = new Server({ bonjour: true, port, server: "https" }, compiler);
-
+      server = new Server(
+        {
+          bonjour: true,
+          port,
+          server: "https",
+        },
+        compiler,
+      );
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -135,29 +130,22 @@ describe("bonjour option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`https://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(mockPublish).toHaveBeenCalledTimes(1);
-
       expect(mockPublish).toHaveBeenCalledWith({
         name: `Webpack Dev Server ${os.hostname()}:${port}`,
         port,
         type: "https",
         subtypes: ["webpack"],
       });
-
       expect(mockUnpublishAll).toHaveBeenCalledTimes(0);
       expect(mockDestroy).toHaveBeenCalledTimes(0);
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -178,9 +166,7 @@ describe("bonjour option", () => {
           destroy: mockDestroy,
         })),
       }));
-
       compiler = webpack(config);
-
       server = new Server(
         {
           port,
@@ -191,11 +177,8 @@ describe("bonjour option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -213,13 +196,10 @@ describe("bonjour option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(mockPublish).toHaveBeenCalledTimes(1);
-
       expect(mockPublish).toHaveBeenCalledWith({
         name: `Webpack Dev Server ${os.hostname()}:${port}`,
         port,
@@ -227,16 +207,12 @@ describe("bonjour option", () => {
         protocol: "udp",
         subtypes: ["webpack"],
       });
-
       expect(mockUnpublishAll).toHaveBeenCalledTimes(0);
       expect(mockDestroy).toHaveBeenCalledTimes(0);
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -257,9 +233,7 @@ describe("bonjour option", () => {
           destroy: mockDestroy,
         })),
       }));
-
       compiler = webpack(config);
-
       server = new Server(
         {
           port,
@@ -273,11 +247,8 @@ describe("bonjour option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -295,13 +266,10 @@ describe("bonjour option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`https://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(mockPublish).toHaveBeenCalledTimes(1);
-
       expect(mockPublish).toHaveBeenCalledWith({
         name: `Webpack Dev Server ${os.hostname()}:${port}`,
         port,
@@ -309,16 +277,12 @@ describe("bonjour option", () => {
         protocol: "udp",
         subtypes: ["webpack"],
       });
-
       expect(mockUnpublishAll).toHaveBeenCalledTimes(0);
       expect(mockDestroy).toHaveBeenCalledTimes(0);
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });

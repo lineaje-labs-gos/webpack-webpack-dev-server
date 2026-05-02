@@ -1,13 +1,16 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config2 from "../fixtures/historyapifallback-2-config/webpack.config.js";
+import config3 from "../fixtures/historyapifallback-3-config/webpack.config.js";
+import config from "../fixtures/historyapifallback-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config2 = require("../fixtures/historyapifallback-2-config/webpack.config");
-const config3 = require("../fixtures/historyapifallback-3-config/webpack.config");
-const config = require("../fixtures/historyapifallback-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["history-api-fallback-option"];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["history-api-fallback-option"];
 
 describe("historyApiFallback option", () => {
   describe("as boolean", () => {
@@ -20,7 +23,6 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           historyApiFallback: true,
@@ -28,11 +30,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -50,23 +49,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -81,7 +74,6 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           historyApiFallback: {
@@ -91,11 +83,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -113,23 +102,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -144,7 +127,6 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config2);
-
       server = new Server(
         {
           static: path.resolve(
@@ -158,11 +140,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -180,23 +159,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -208,26 +181,20 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(
         `http://localhost:${port}/random-file.txt`,
         {
           waitUntil: "networkidle2",
         },
       );
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -242,7 +209,6 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config3);
-
       server = new Server(
         {
           static: false,
@@ -253,11 +219,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -275,23 +238,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/index.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -306,7 +263,6 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config2);
-
       server = new Server(
         {
           port,
@@ -329,11 +285,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -351,23 +304,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -379,23 +326,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/acme`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -407,23 +348,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/other`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -439,9 +374,7 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       consoleSpy = jest.spyOn(globalThis.console, "log");
-
       compiler = webpack(config);
-
       server = new Server(
         {
           historyApiFallback: {
@@ -452,11 +385,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -475,19 +405,14 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleSpy).toHaveBeenCalledWith(
         "Rewriting",
         "GET",
@@ -495,11 +420,9 @@ describe("historyApiFallback option", () => {
         "to",
         "/bar.html",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -515,9 +438,7 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       consoleSpy = jest.spyOn(globalThis.console, "log");
-
       compiler = webpack(config);
-
       server = new Server(
         {
           historyApiFallback: {
@@ -528,11 +449,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -551,19 +469,14 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleSpy).toHaveBeenCalledWith(
         "Rewriting",
         "GET",
@@ -571,11 +484,9 @@ describe("historyApiFallback option", () => {
         "to",
         "/bar.html",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -590,7 +501,6 @@ describe("historyApiFallback option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config3);
-
       server = new Server(
         {
           static: path.resolve(
@@ -602,11 +512,8 @@ describe("historyApiFallback option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -624,23 +531,17 @@ describe("historyApiFallback option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["content-type"]).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -648,35 +549,31 @@ describe("historyApiFallback option", () => {
       await page.goto(`http://localhost:${port}/foo`, {
         waitUntil: "networkidle0",
       });
-
       const responseGet = await page.evaluate(async () => {
-        const response = await fetch("/foo", { method: "GET" });
-
+        const response = await fetch("/foo", {
+          method: "GET",
+        });
         return {
           contentType: response.headers.get("content-type"),
           statusText: response.statusText,
           text: await response.text(),
         };
       });
-
       expect(responseGet.contentType).toMatchSnapshot(
         "response headers content-type",
       );
-
       expect(responseGet.statusText).toMatchSnapshot("response status");
-
       expect(responseGet.text).toMatchSnapshot("response text");
-
       const responseHead = await page.evaluate(async () => {
-        const response = await fetch("/foo", { method: "HEAD" });
-
+        const response = await fetch("/foo", {
+          method: "HEAD",
+        });
         return {
           contentType: response.headers.get("content-type"),
           statusText: response.statusText,
           text: await response.text(),
         };
       });
-
       expect(responseHead).toMatchObject({
         ...responseGet,
         // HEAD response has an empty body

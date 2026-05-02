@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 describe("index", () => {
   let log;
   let socket;

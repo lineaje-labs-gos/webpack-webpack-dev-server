@@ -1,10 +1,10 @@
-"use strict";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/simple-config-other/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/simple-config-other/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["compress-option"];
+const port = _ports_map["compress-option"];
 
 describe("compress option", () => {
   describe("enabled by default when not specified", () => {
@@ -17,13 +17,14 @@ describe("compress option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
-      server = new Server({ port }, compiler);
-
+      server = new Server(
+        {
+          port,
+        },
+        compiler,
+      );
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -41,21 +42,16 @@ describe("compress option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(response.headers()["content-encoding"]).toMatchSnapshot(
         "response headers content-encoding",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -70,7 +66,6 @@ describe("compress option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           compress: true,
@@ -78,11 +73,8 @@ describe("compress option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -100,21 +92,16 @@ describe("compress option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(response.headers()["content-encoding"]).toMatchSnapshot(
         "response headers content-encoding",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -129,7 +116,6 @@ describe("compress option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           compress: false,
@@ -137,11 +123,8 @@ describe("compress option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -159,21 +142,16 @@ describe("compress option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(response.headers()["content-encoding"]).toMatchSnapshot(
         "response headers content-encoding",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });

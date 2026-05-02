@@ -1,7 +1,7 @@
-"use strict";
+import { testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-allowed-hosts"];
+const port = _ports_map["cli-allowed-hosts"];
 
 describe('"allowedHosts" CLI option', () => {
   it('should work using "--allowed-hosts auto"', async () => {
@@ -11,7 +11,6 @@ describe('"allowedHosts" CLI option', () => {
       "--allowed-hosts",
       "auto",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -22,7 +21,6 @@ describe('"allowedHosts" CLI option', () => {
       "--allowed-hosts",
       "all",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -33,7 +31,6 @@ describe('"allowedHosts" CLI option', () => {
       "--allowed-hosts",
       "testhouse.com",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -46,7 +43,6 @@ describe('"allowedHosts" CLI option', () => {
       "--allowed-hosts",
       "testhost1.com",
     ]);
-
     expect(exitCode).toBe(0);
   });
 });

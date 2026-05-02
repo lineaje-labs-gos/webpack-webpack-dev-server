@@ -1,12 +1,11 @@
-"use strict";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import HTMLGeneratorPlugin from "../helpers/html-generator-plugin.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const HTMLGeneratorPlugin = require("../helpers/html-generator-plugin");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map").stats;
-
+const port = _ports_map.stats;
 jest.spyOn(globalThis.console, "log").mockImplementation();
 
 describe("stats", () => {
@@ -78,11 +77,12 @@ describe("stats", () => {
           },
           new HTMLGeneratorPlugin(),
         ],
-        stats: { warningsFilter: /Warning from compilation/ },
+        stats: {
+          warningsFilter: /Warning from compilation/,
+        },
       },
     },
   ];
-
   if (webpack.version.startsWith("5")) {
     cases.push({
       title: 'should work and respect the "ignoreWarnings" option',
@@ -106,30 +106,26 @@ describe("stats", () => {
       },
     });
   }
-
   for (const testCase of cases) {
     it(testCase.title, async () => {
-      const compiler = webpack({ ...config, ...testCase.webpackOptions });
+      const compiler = webpack({
+        ...config,
+        ...testCase.webpackOptions,
+      });
       const devServerOptions = {
         port,
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       const { page, browser } = await runBrowser();
-
       try {
         const consoleMessages = [];
-
         page.on("console", (message) => {
           consoleMessages.push(message);
         });
-
         await page.goto(`http://localhost:${port}/`, {
           waitUntil: "networkidle0",
         });
-
         expect(
           consoleMessages.map((message) => message.text()),
         ).toMatchSnapshot();

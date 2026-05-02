@@ -1,9 +1,10 @@
-"use strict";
-
-const path = require("path");
-const HTMLGeneratorPlugin = require("../../helpers/html-generator-plugin");
-
-module.exports = [
+import path from "path";
+import HTMLGeneratorPlugin from "../../helpers/html-generator-plugin.js";
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+export default [
   {
     name: "app",
     // dependencies: ["worker"],

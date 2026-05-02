@@ -1,11 +1,13 @@
-"use strict";
+import { createRequire } from "node:module";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import sessionSubscribe from "../helpers/session-subscribe.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const sessionSubscribe = require("../helpers/session-subscribe");
-const port = require("../ports-map")["client-option"];
+const require = createRequire(import.meta.url);
+const port = _ports_map["client-option"];
 
 describe("client option", () => {
   describe("default behaviour", () => {
@@ -18,7 +20,6 @@ describe("client option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           client: {
@@ -29,11 +30,8 @@ describe("client option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -51,39 +49,30 @@ describe("client option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const webSocketRequests = [];
       const session = await page.createCDPSession();
-
       await session.send("Target.setAutoAttach", {
         autoAttach: true,
         flatten: true,
         waitForDebuggerOnStart: true,
       });
-
       await sessionSubscribe(session);
-
       session.on("Network.webSocketCreated", (test) => {
         webSocketRequests.push(test);
       });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
 
       // overlay should be true by default
       expect(server.options.client.overlay).toBe(true);
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(webSocketRequests.map((request) => request.url)).toMatchSnapshot(
         "webSockets",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -98,7 +87,6 @@ describe("client option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           client: {
@@ -118,11 +106,8 @@ describe("client option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -140,34 +125,26 @@ describe("client option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const webSocketRequests = [];
       const session = await page.createCDPSession();
-
       await session.send("Target.setAutoAttach", {
         autoAttach: true,
         flatten: true,
         waitForDebuggerOnStart: true,
       });
-
       await sessionSubscribe(session);
-
       session.on("Network.webSocketCreated", (test) => {
         webSocketRequests.push(test);
       });
-
       await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(webSocketRequests.map((request) => request.url)).toMatchSnapshot(
         "webSockets",
       );
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -182,7 +159,6 @@ describe("client option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           client: false,
@@ -190,11 +166,8 @@ describe("client option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -212,36 +185,26 @@ describe("client option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const webSocketRequests = [];
       const session = await page.createCDPSession();
-
       await session.send("Target.setAutoAttach", {
         autoAttach: true,
         flatten: true,
         waitForDebuggerOnStart: true,
       });
-
       await sessionSubscribe(session);
-
       session.on("Network.webSocketCreated", (test) => {
         webSocketRequests.push(test);
       });
-
       const response = await page.goto(`http://localhost:${port}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       expect(webSocketRequests).toMatchSnapshot("webSockets");
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).not.toMatch(/client\/index\.js/);
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -251,7 +214,6 @@ describe("client option", () => {
     let server;
     let page;
     let browser;
-
     class OverrideServer extends Server {
       getClientEntry() {
         return require.resolve(
@@ -268,16 +230,13 @@ describe("client option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new OverrideServer(
         {
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
     });
 
@@ -290,9 +249,7 @@ describe("client option", () => {
       const response = await page.goto(`http://localhost:${port}/main.js`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       const content = await response.text();
       expect(content).toContain("CustomClientEntry.js");
       expect(content).toContain("CustomClientHotEntry.js");
@@ -331,11 +288,8 @@ describe("client option", () => {
 
     describe("passed to server", () => {
       for (const data of clientModes) {
-        it(`${data.title} ${
-          data.shouldThrow ? "should throw" : "should not throw"
-        }`, async () => {
+        it(`${data.title} ${data.shouldThrow ? "should throw" : "should not throw"}`, async () => {
           const compiler = webpack(config);
-
           const server = new Server(
             {
               client: data.client,
@@ -343,21 +297,17 @@ describe("client option", () => {
             },
             compiler,
           );
-
           let thrownError;
-
           try {
             await server.start();
           } catch (error) {
             thrownError = error;
           }
-
           if (data.shouldThrow) {
             expect(thrownError.message).toMatch(
               /client\.webSocketTransport must be a string/,
             );
           }
-
           await server.stop();
         });
       }

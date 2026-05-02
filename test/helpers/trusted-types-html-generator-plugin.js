@@ -1,5 +1,3 @@
-"use strict";
-
 const HTMLContentForIndex = `
 <!DOCTYPE html>
 <html>
@@ -17,7 +15,6 @@ const HTMLContentForIndex = `
   </body>
 </html>
 `;
-
 const HTMLContentForTest = `
 <!DOCTYPE html>
 <html>
@@ -35,14 +32,12 @@ const HTMLContentForTest = `
 </html>
 `;
 
-module.exports = class HTMLGeneratorPlugin {
+export default (class HTMLGeneratorPlugin {
   apply(compiler) {
     const pluginName = "html-generator-plugin";
-
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
       if (compiler.webpack) {
         const { RawSource } = compiler.webpack.sources;
-
         compilation.hooks.processAssets.tap(
           {
             name: pluginName,
@@ -51,7 +46,6 @@ module.exports = class HTMLGeneratorPlugin {
           () => {
             const indexSource = new RawSource(HTMLContentForIndex);
             const testSource = new RawSource(HTMLContentForTest);
-
             compilation.emitAsset("index.html", indexSource);
             compilation.emitAsset("test.html", testSource);
           },
@@ -78,4 +72,4 @@ module.exports = class HTMLGeneratorPlugin {
       }
     });
   }
-};
+});

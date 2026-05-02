@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 describe("socket", () => {
   beforeEach(() => {
     jest.resetAllMocks();

@@ -1,7 +1,7 @@
-"use strict";
+import { testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-web-socket-server"];
+const port = _ports_map["cli-web-socket-server"];
 
 describe('"webSocketServer" CLI option', () => {
   it('should work using "--web-socket-server-type ws"', async () => {
@@ -11,7 +11,6 @@ describe('"webSocketServer" CLI option', () => {
       "--web-socket-server-type",
       "ws",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -21,7 +20,6 @@ describe('"webSocketServer" CLI option', () => {
       port,
       "--no-web-socket-server",
     ]);
-
     expect(exitCode).toBe(0);
   });
 });

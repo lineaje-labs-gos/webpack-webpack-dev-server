@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 describe("'createSocketURL' function", () => {
   globalThis.__webpack_hash__ = "hash";
 

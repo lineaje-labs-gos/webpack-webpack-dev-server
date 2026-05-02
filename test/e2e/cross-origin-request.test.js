@@ -1,10 +1,11 @@
-"use strict";
+import http from "node:http";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const [port1, port2] = require("../ports-map")["cross-origin-request"];
+const [port1, port2] = _ports_map["cross-origin-request"];
 
 describe("cross-origin requests", () => {
   const devServerPort = port1;
@@ -18,14 +19,13 @@ describe("cross-origin requests", () => {
       allowedHosts: "auto",
     };
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
 
     // Start a separate server for serving the HTML file
-    const http = require("node:http");
-
     const htmlServer = http.createServer((req, res) => {
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
       res.end(`
         <html>
           <head>
@@ -36,24 +36,17 @@ describe("cross-origin requests", () => {
       `);
     });
     htmlServer.listen(htmlServerPort, htmlServerHost);
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
-
       page.on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
       const scriptTagRequest = page.waitForResponse(
         `http://localhost:${devServerPort}/main.js`,
       );
-
       await page.goto(`http://${htmlServerHost}:${htmlServerPort}`);
-
       const response = await scriptTagRequest;
-
       expect(response.status()).toBe(403);
     } finally {
       await browser.close();
@@ -72,14 +65,13 @@ describe("cross-origin requests", () => {
       },
     };
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
 
     // Start a separate server for serving the HTML file
-    const http = require("node:http");
-
     const htmlServer = http.createServer((req, res) => {
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
       res.end(`
         <html>
           <head>
@@ -90,24 +82,17 @@ describe("cross-origin requests", () => {
       `);
     });
     htmlServer.listen(htmlServerPort, htmlServerHost);
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
-
       page.on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
       const scriptTagRequest = page.waitForResponse(
         `http://localhost:${devServerPort}/main.js`,
       );
-
       await page.goto(`http://${htmlServerHost}:${htmlServerPort}`);
-
       const response = await scriptTagRequest;
-
       expect(response.status()).toBe(200);
     } finally {
       await browser.close();
@@ -123,14 +108,13 @@ describe("cross-origin requests", () => {
       allowedHosts: "all",
     };
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
 
     // Start a separate server for serving the HTML file
-    const http = require("node:http");
-
     const htmlServer = http.createServer((req, res) => {
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
       res.end(`
         <html>
           <head>
@@ -141,24 +125,17 @@ describe("cross-origin requests", () => {
       `);
     });
     htmlServer.listen(htmlServerPort, htmlServerHost);
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
-
       page.on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
       const scriptTagRequest = page.waitForResponse(
         `http://localhost:${devServerPort}/main.js`,
       );
-
       await page.goto(`http://${htmlServerHost}:${htmlServerPort}`);
-
       const response = await scriptTagRequest;
-
       expect(response.status()).toBe(200);
     } finally {
       await browser.close();
@@ -174,14 +151,13 @@ describe("cross-origin requests", () => {
       allowedHosts: ["localhost"],
     };
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
 
     // Start a separate server for serving the HTML file
-    const http = require("node:http");
-
     const htmlServer = http.createServer((req, res) => {
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, {
+        "Content-Type": "text/html",
+      });
       res.end(`
         <html>
           <head>
@@ -192,24 +168,17 @@ describe("cross-origin requests", () => {
       `);
     });
     htmlServer.listen(htmlServerPort, htmlServerHost);
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
-
       page.on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
       const scriptTagRequest = page.waitForResponse(
         `http://localhost:${devServerPort}/main.js`,
       );
-
       await page.goto(`http://${htmlServerHost}:${htmlServerPort}`);
-
       const response = await scriptTagRequest;
-
       expect(response.status()).toBe(200);
     } finally {
       await browser.close();

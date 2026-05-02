@@ -1,11 +1,11 @@
-"use strict";
+import request from "supertest";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/simple-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const request = require("supertest");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/simple-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["headers-option"];
+const port = _ports_map["headers-option"];
 
 describe("headers option", () => {
   describe("as a string", () => {
@@ -18,19 +18,17 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          headers: { "X-Foo": "dev-server headers" },
+          headers: {
+            "X-Foo": "dev-server headers",
+          },
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -48,21 +46,16 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-foo"]).toMatchSnapshot(
         "response headers x-foo",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -77,7 +70,6 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           headers: [
@@ -94,11 +86,8 @@ describe("headers option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -116,25 +105,19 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-foo"]).toMatchSnapshot(
         "response headers x-foo",
       );
-
       expect(response.headers()["x-bar"]).toMatchSnapshot(
         "response headers x-bar",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -149,19 +132,17 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          headers: { "X-Bar": ["key1=value1", "key2=value2"] },
+          headers: {
+            "X-Bar": ["key1=value1", "key2=value2"],
+          },
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -179,21 +160,16 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-bar"]).toMatchSnapshot(
         "response headers x-bar",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -208,19 +184,17 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          headers: () => ({ "X-Bar": ["key1=value1", "key2=value2"] }),
+          headers: () => ({
+            "X-Bar": ["key1=value1", "key2=value2"],
+          }),
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -238,21 +212,16 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-bar"]).toMatchSnapshot(
         "response headers x-bar",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -267,7 +236,6 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           headers: () => [
@@ -284,11 +252,8 @@ describe("headers option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -306,25 +271,19 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-foo"]).toMatchSnapshot(
         "response headers x-foo",
       );
-
       expect(response.headers()["x-bar"]).toMatchSnapshot(
         "response headers x-bar",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -339,22 +298,22 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          headers: { "X-Foo": "dev-server-headers" },
+          headers: {
+            "X-Foo": "dev-server-headers",
+          },
           devMiddleware: {
-            headers: { "X-Foo": "dev-middleware-headers" },
+            headers: {
+              "X-Foo": "dev-middleware-headers",
+            },
           },
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -372,21 +331,16 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-foo"]).toMatchSnapshot(
         "response headers x-foo",
       );
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -402,21 +356,18 @@ describe("headers option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          headers: { "X-Foo": "dev-server headers" },
+          headers: {
+            "X-Foo": "dev-server headers",
+          },
           port,
         },
         compiler,
       );
-
       await server.start();
-
       req = request(server.app);
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -434,11 +385,9 @@ describe("headers option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.headers()["x-foo"]).toMatchSnapshot(
         "response headers x-foo",
       );
@@ -447,9 +396,7 @@ describe("headers option", () => {
         "console messages",
       );
       expect(pageErrors).toMatchSnapshot("page errors");
-
       const responseForHead = await req.get("/");
-
       expect(responseForHead.headers["x-foo"]).toBe("dev-server headers");
     });
   });

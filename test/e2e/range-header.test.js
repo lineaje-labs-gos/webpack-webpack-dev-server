@@ -1,10 +1,10 @@
-"use strict";
+import request from "supertest";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/static-config/webpack.config.js";
+import _ports_map from "../ports-map.js";
 
-const request = require("supertest");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/static-config/webpack.config");
-const port = require("../ports-map")["range-header"];
+const port = _ports_map["range-header"];
 
 describe("'Range' header", () => {
   let compiler;
@@ -12,9 +12,12 @@ describe("'Range' header", () => {
 
   beforeAll(async () => {
     compiler = webpack(config);
-
-    server = new Server({ port }, compiler);
-
+    server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
   });
 
@@ -24,18 +27,15 @@ describe("'Range' header", () => {
 
   it('should work with "Range" header using "GET" method', async () => {
     const response = await request(server.app).get("/main.js");
-
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",
     );
     expect(response.headers["accept-ranges"]).toBe("bytes");
-
     const responseContent = response.text;
     const responseRange = await request(server.app)
       .get("/main.js")
       .set("Range", "bytes=0-499");
-
     expect(responseRange.status).toBe(206);
     expect(responseRange.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",
@@ -48,17 +48,14 @@ describe("'Range' header", () => {
 
   it('should work with "Range" header using "HEAD" method', async () => {
     const response = await request(server.app).head("/main.js");
-
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",
     );
     expect(response.headers["accept-ranges"]).toBe("bytes");
-
     const responseRange = await request(server.app)
       .head("/main.js")
       .set("Range", "bytes=0-499");
-
     expect(responseRange.status).toBe(206);
     expect(responseRange.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",
@@ -69,17 +66,14 @@ describe("'Range' header", () => {
 
   it('should work with unsatisfiable "Range" header using "GET" method', async () => {
     const response = await request(server.app).get("/main.js");
-
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",
     );
     expect(response.headers["accept-ranges"]).toBe("bytes");
-
     const responseRange = await request(server.app)
       .get("/main.js")
       .set("Range", "bytes=99999999999-");
-
     expect(responseRange.status).toBe(416);
     expect(responseRange.headers["content-type"]).toBe(
       "text/html; charset=utf-8",
@@ -89,18 +83,15 @@ describe("'Range' header", () => {
 
   it('should work with malformed "Range" header using "GET" method', async () => {
     const response = await request(server.app).get("/main.js");
-
     expect(response.status).toBe(200);
     expect(response.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",
     );
     expect(response.headers["accept-ranges"]).toBe("bytes");
-
     const responseContent = response.text;
     const responseRange = await request(server.app)
       .get("/main.js")
       .set("Range", "bytes");
-
     expect(responseRange.status).toBe(200);
     expect(responseRange.headers["content-type"]).toBe(
       "text/javascript; charset=utf-8",

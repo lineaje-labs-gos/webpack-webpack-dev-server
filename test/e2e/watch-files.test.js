@@ -1,13 +1,15 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "graceful-fs";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/watch-files-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const fs = require("graceful-fs");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/watch-files-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["watch-files-option"];
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["watch-files-option"];
 const watchDir = path.resolve(
   __dirname,
   "../fixtures/watch-files-config/public",
@@ -25,7 +27,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: file,
@@ -33,11 +34,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -56,29 +54,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -96,7 +89,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: watchDir,
@@ -104,11 +96,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -127,29 +116,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -167,7 +151,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: `${watchDir}/**/*`,
@@ -175,11 +158,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -198,29 +178,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -239,7 +214,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: [`${watchDir}/**/*.txt`, `${watchDir}/**/*.js`],
@@ -247,11 +221,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -271,29 +242,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -311,7 +277,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: {
@@ -325,11 +290,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -348,29 +310,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -378,7 +335,6 @@ describe("watchFiles option", () => {
 
     it("should not reload when a non-matching file is changed", async () => {
       const ignoredFile = path.join(watchDir, "assets/example.js");
-
       page
         .on("console", (message) => {
           consoleMessages.push(message);
@@ -386,11 +342,9 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
 
       // change ignored file content
@@ -399,11 +353,9 @@ describe("watchFiles option", () => {
       // wait a bit to ensure no reload happens
       await new Promise((resolve) => {
         let changed = false;
-
         server.staticWatchers[0].on("change", () => {
           changed = true;
         });
-
         setTimeout(() => {
           expect(changed).toBe(false);
           resolve();
@@ -427,7 +379,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: {
@@ -440,11 +391,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -463,29 +411,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -499,11 +442,9 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
 
       // change ignored file content
@@ -512,11 +453,9 @@ describe("watchFiles option", () => {
       // wait a bit to ensure no reload happens
       await new Promise((resolve) => {
         let changed = false;
-
         server.staticWatchers[0].on("change", () => {
           changed = true;
         });
-
         setTimeout(() => {
           expect(changed).toBe(false);
           resolve();
@@ -540,7 +479,6 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: {
@@ -553,11 +491,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -576,29 +511,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -612,11 +542,9 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
 
       // change ignored file content
@@ -625,11 +553,9 @@ describe("watchFiles option", () => {
       // wait a bit to ensure no reload happens
       await new Promise((resolve) => {
         let changed = false;
-
         server.staticWatchers[0].on("change", () => {
           changed = true;
         });
-
         setTimeout(() => {
           expect(changed).toBe(false);
           resolve();
@@ -656,9 +582,7 @@ describe("watchFiles option", () => {
       } catch {
         // ignore
       }
-
       compiler = webpack(config);
-
       server = new Server(
         {
           watchFiles: nonExistFile,
@@ -666,11 +590,8 @@ describe("watchFiles option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -688,24 +609,20 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(nonExistFile);
           resolve();
         });
@@ -733,19 +650,17 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          watchFiles: { paths: file },
+          watchFiles: {
+            paths: file,
+          },
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -764,29 +679,24 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
       await new Promise((resolve) => {
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           resolve();
         });
       });
@@ -805,19 +715,17 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          watchFiles: { paths: [file, other] },
+          watchFiles: {
+            paths: [file, other],
+          },
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -837,35 +745,28 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "foo", "utf8");
       fs.writeFileSync(other, "bar", "utf8");
-
       await new Promise((resolve) => {
         const expected = [file, other];
         let changed = 0;
-
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(expected.includes(changedPath)).toBeTruthy();
-
           changed += 1;
-
           if (changed === 2) {
             resolve();
           }
@@ -886,19 +787,20 @@ describe("watchFiles option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
-          watchFiles: [{ paths: [file] }, other],
+          watchFiles: [
+            {
+              paths: [file],
+            },
+            other,
+          ],
           port,
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -918,46 +820,38 @@ describe("watchFiles option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
 
       // change file content
       fs.writeFileSync(file, "foo", "utf8");
       fs.writeFileSync(other, "bar", "utf8");
-
       await new Promise((resolve) => {
         let changed = 0;
-
         server.staticWatchers[0].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(file);
-
           changed += 1;
-
           if (changed === 2) {
             resolve();
           }
         });
         server.staticWatchers[1].on("change", async (changedPath) => {
           // page reload
-          await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+          await page.waitForNavigation({
+            waitUntil: "networkidle0",
+          });
           expect(changedPath).toBe(other);
-
           changed += 1;
-
           if (changed === 2) {
             resolve();
           }
@@ -968,7 +862,6 @@ describe("watchFiles option", () => {
 
   describe("should work with options", () => {
     const file = path.join(watchDir, "assets/example.txt");
-
     const optionCases = [
       {
         interval: undefined,
@@ -1033,7 +926,6 @@ describe("watchFiles option", () => {
         poll: 400,
       },
     ];
-
     for (const optionCase of optionCases) {
       describe(JSON.stringify(optionCase), () => {
         let compiler;
@@ -1045,7 +937,6 @@ describe("watchFiles option", () => {
 
         beforeEach(async () => {
           compiler = webpack(config);
-
           server = new Server(
             {
               watchFiles: {
@@ -1056,11 +947,8 @@ describe("watchFiles option", () => {
             },
             compiler,
           );
-
           await server.start();
-
           ({ page, browser } = await runBrowser());
-
           pageErrors = [];
           consoleMessages = [];
         });
@@ -1079,32 +967,27 @@ describe("watchFiles option", () => {
             .on("pageerror", (error) => {
               pageErrors.push(error);
             });
-
           const response = await page.goto(`http://localhost:${port}/`, {
             waitUntil: "networkidle0",
           });
 
           // should pass correct options to chokidar config
           expect(server.staticWatchers[0].options).toMatchSnapshot();
-
           expect(response.status()).toMatchSnapshot("response status");
-
           expect(
             consoleMessages.map((message) => message.text()),
           ).toMatchSnapshot("console messages");
-
           expect(pageErrors).toMatchSnapshot("page errors");
 
           // change file content
           fs.writeFileSync(file, "Kurosaki Ichigo", "utf8");
-
           await new Promise((resolve) => {
             server.staticWatchers[0].on("change", async (changedPath) => {
               // page reload
-              await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+              await page.waitForNavigation({
+                waitUntil: "networkidle0",
+              });
               expect(changedPath).toBe(file);
-
               resolve();
             });
           });

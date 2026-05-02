@@ -1,17 +1,16 @@
-"use strict";
+import http from "node:http";
+import net from "node:net";
+import os from "node:os";
+import path from "node:path";
+import httpProxy from "http-proxy";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import sessionSubscribe from "../helpers/session-subscribe.js";
+import _ports_map from "../ports-map.js";
 
-const http = require("node:http");
-const net = require("node:net");
-const os = require("node:os");
-const path = require("node:path");
-const httpProxy = require("http-proxy");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const sessionSubscribe = require("../helpers/session-subscribe");
-const port1 = require("../ports-map").ipc;
-
+const port1 = _ports_map.ipc;
 const webSocketServers = ["ws"];
 
 describe("web socket server URL", () => {
@@ -22,46 +21,38 @@ describe("web socket server URL", () => {
       const devServerHost = "localhost";
       const proxyHost = devServerHost;
       const proxyPort = port1;
-
       const compiler = webpack(config);
       const devServerOptions = {
         webSocketServer,
         ipc: true,
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const proxy = httpProxy.createProxyServer({
-          target: { socketPath: server.options.ipc },
+          target: {
+            socketPath: server.options.ipc,
+          },
         });
-
         const proxyServer = http.createServer((request, response) => {
           // You can define here your custom logic to handle the request
           // and then proxy the request.
           proxy.web(request, response);
         });
-
         proxyServer.on("upgrade", (request, socket, head) => {
           proxy.ws(request, socket, head);
         });
-
         return proxyServer.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -69,29 +60,21 @@ describe("web socket server URL", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         const webSocketRequests = [];
-
         const session = await page.createCDPSession();
-
         await session.send("Target.setAutoAttach", {
           autoAttach: true,
           flatten: true,
           waitForDebuggerOnStart: true,
         });
-
         await sessionSubscribe(session);
-
         session.on("Network.webSocketCreated", (test) => {
           webSocketRequests.push(test);
         });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         const [webSocketRequest] = webSocketRequests;
-
         expect(webSocketRequest.url).toContain(
           `${websocketURLProtocol}://${devServerHost}:${proxyPort}/ws`,
         );
@@ -101,7 +84,6 @@ describe("web socket server URL", () => {
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -112,50 +94,41 @@ describe("web socket server URL", () => {
       const pipePrefix = isWindows ? "\\\\.\\pipe\\" : os.tmpdir();
       const pipeName = `webpack-dev-server.${process.pid}-1.sock`;
       const ipc = path.join(pipePrefix, pipeName);
-
       const devServerHost = "localhost";
       const proxyHost = devServerHost;
       const proxyPort = port1;
-
       const compiler = webpack(config);
       const devServerOptions = {
         webSocketServer,
         ipc,
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const proxy = httpProxy.createProxyServer({
-          target: { socketPath: ipc },
+          target: {
+            socketPath: ipc,
+          },
         });
-
         const proxyServer = http.createServer((request, response) => {
           // You can define here your custom logic to handle the request
           // and then proxy the request.
           proxy.web(request, response);
         });
-
         proxyServer.on("upgrade", (request, socket, head) => {
           proxy.ws(request, socket, head);
         });
-
         return proxyServer.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -163,29 +136,21 @@ describe("web socket server URL", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         const webSocketRequests = [];
-
         const session = await page.createCDPSession();
-
         await session.send("Target.setAutoAttach", {
           autoAttach: true,
           flatten: true,
           waitForDebuggerOnStart: true,
         });
-
         await sessionSubscribe(session);
-
         session.on("Network.webSocketCreated", (test) => {
           webSocketRequests.push(test);
         });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         const [webSocketRequest] = webSocketRequests;
-
         expect(webSocketRequest.url).toContain(
           `${websocketURLProtocol}://${devServerHost}:${proxyPort}/ws`,
         );
@@ -195,7 +160,6 @@ describe("web socket server URL", () => {
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await browser.close();
         await server.stop();
       }
@@ -209,11 +173,9 @@ describe("web socket server URL", () => {
       const pipePrefix = isWindows ? "\\\\.\\pipe\\" : localRelative;
       const pipeName = `webpack-dev-server.${process.pid}-2.sock`;
       const ipc = path.join(pipePrefix, pipeName);
-
       const ipcServer = await new Promise((resolve, reject) => {
         // eslint-disable-next-line new-cap
         const server = net.Server();
-
         server.on("error", (error) => {
           reject(error);
         });
@@ -223,11 +185,9 @@ describe("web socket server URL", () => {
           resolve();
         });
       });
-
       const devServerHost = "localhost";
       const proxyHost = devServerHost;
       const proxyPort = port1;
-
       const compiler = webpack(config);
       const devServerOptions = {
         webSocketServer,
@@ -235,39 +195,32 @@ describe("web socket server URL", () => {
         ipc,
       };
       const server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       function startProxy(callback) {
         const proxy = httpProxy.createProxyServer({
-          target: { socketPath: ipc },
+          target: {
+            socketPath: ipc,
+          },
         });
-
         const proxyServer = http.createServer((request, response) => {
           // You can define here your custom logic to handle the request
           // and then proxy the request.
           proxy.web(request, response);
         });
-
         proxyServer.on("upgrade", (request, socket, head) => {
           proxy.ws(request, socket, head);
         });
-
         return proxyServer.listen(proxyPort, proxyHost, callback);
       }
-
       const proxy = await new Promise((resolve) => {
         const proxyCreated = startProxy(() => {
           resolve(proxyCreated);
         });
       });
-
       const { page, browser } = await runBrowser();
-
       try {
         const pageErrors = [];
         const consoleMessages = [];
-
         page
           .on("console", (message) => {
             consoleMessages.push(message);
@@ -275,29 +228,21 @@ describe("web socket server URL", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         const webSocketRequests = [];
-
         const session = await page.createCDPSession();
-
         await session.send("Target.setAutoAttach", {
           autoAttach: true,
           flatten: true,
           waitForDebuggerOnStart: true,
         });
-
         await sessionSubscribe(session);
-
         session.on("Network.webSocketCreated", (test) => {
           webSocketRequests.push(test);
         });
-
         await page.goto(`http://${proxyHost}:${proxyPort}/`, {
           waitUntil: "networkidle0",
         });
-
         const [webSocketRequest] = webSocketRequests;
-
         expect(webSocketRequest.url).toContain(
           `${websocketURLProtocol}://${devServerHost}:${proxyPort}/ws`,
         );
@@ -307,15 +252,12 @@ describe("web socket server URL", () => {
         expect(pageErrors).toMatchSnapshot("page errors");
       } finally {
         proxy.close();
-
         await new Promise((resolve, reject) => {
           ipcServer.close((error) => {
             if (error) {
               reject(error);
-
               return;
             }
-
             resolve();
           });
         });

@@ -1,9 +1,9 @@
-"use strict";
+import { klona } from "klona/full";
+import webpack from "webpack";
+import Server from "../lib/Server.js";
+import _ports_map from "./ports-map.js";
 
-const { klona } = require("klona/full");
-const webpack = require("webpack");
-const Server = require("../lib/Server");
-const port = require("./ports-map")["normalize-option"];
+const port = _ports_map["normalize-option"];
 
 describe("normalize options", () => {
   const cases = [
@@ -483,7 +483,6 @@ describe("normalize options", () => {
         },
       },
     },
-
     {
       title: "single compiler watchOptions is object",
       multiCompiler: false,
@@ -569,14 +568,15 @@ describe("normalize options", () => {
       },
     },
   ];
-
   for (const item of cases) {
     it(item.title, async () => {
       let webpackConfig;
-
       if (item.multiCompiler) {
-        webpackConfig = require("./fixtures/multi-compiler-one-configuration/webpack.config");
-
+        webpackConfig = (
+          await import(
+            "./fixtures/multi-compiler-one-configuration/webpack.config.js"
+          )
+        ).default;
         if (Array.isArray(item.webpackConfig)) {
           webpackConfig = item.webpackConfig.map((config, index) => ({
             ...webpackConfig[index],
@@ -584,8 +584,9 @@ describe("normalize options", () => {
           }));
         }
       } else {
-        webpackConfig = require("./fixtures/simple-config/webpack.config");
-
+        webpackConfig = (
+          await import("./fixtures/simple-config/webpack.config.js")
+        ).default;
         if (item.webpackConfig) {
           webpackConfig = {
             ...webpackConfig,
@@ -593,26 +594,26 @@ describe("normalize options", () => {
           };
         }
       }
-
       const compiler = webpack(webpackConfig);
-      const server = new Server({ ...item.options, port }, compiler);
-
+      const server = new Server(
+        {
+          ...item.options,
+          port,
+        },
+        compiler,
+      );
       let errored;
-
       try {
         await server.start();
       } catch (error) {
         errored = error;
       }
-
       try {
         if (item.throws) {
           expect(errored.message).toMatch(item.throws);
         } else {
           const optionsForSnapshot = klona(server.options);
-
           optionsForSnapshot.port = "<auto>";
-
           if (optionsForSnapshot.static.length > 0) {
             for (const i of optionsForSnapshot.static) {
               i.directory = i.directory
@@ -623,7 +624,6 @@ describe("normalize options", () => {
                 );
             }
           }
-
           expect(optionsForSnapshot).toMatchSnapshot();
         }
       } finally {

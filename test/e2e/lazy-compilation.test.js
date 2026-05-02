@@ -1,27 +1,28 @@
-"use strict";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import lazyCompilationMultipleEntriesConfig from "../fixtures/lazy-compilation-multiple-entries/webpack.config.js";
+import lazyCompilationSingleEntryConfig from "../fixtures/lazy-compilation-single-entry/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const lazyCompilationMultipleEntriesConfig = require("../fixtures/lazy-compilation-multiple-entries/webpack.config");
-const lazyCompilationSingleEntryConfig = require("../fixtures/lazy-compilation-single-entry/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["lazy-compilation"];
+const port = _ports_map["lazy-compilation"];
 
 /* eslint-disable jest/no-disabled-tests */
 describe("lazy compilation", () => {
   // TODO jest freeze due webpack do not close `eventsource`, we should uncomment this after fix it on webpack side
   it.skip("should work with single entry", async () => {
     const compiler = webpack(lazyCompilationSingleEntryConfig);
-    const server = new Server({ port }, compiler);
-
+    const server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
       const consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -29,7 +30,6 @@ describe("lazy compilation", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/test.html`, {
         waitUntil: "domcontentloaded",
       });
@@ -37,12 +37,10 @@ describe("lazy compilation", () => {
         const interval = setInterval(() => {
           if (consoleMessages.includes("Hey.")) {
             clearInterval(interval);
-
             resolve();
           }
         }, 100);
       });
-
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
@@ -53,16 +51,17 @@ describe("lazy compilation", () => {
 
   it.skip("should work with multiple entries", async () => {
     const compiler = webpack(lazyCompilationMultipleEntriesConfig);
-    const server = new Server({ port }, compiler);
-
+    const server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
       const consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -70,7 +69,6 @@ describe("lazy compilation", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/test-one.html`, {
         waitUntil: "domcontentloaded",
       });
@@ -79,12 +77,10 @@ describe("lazy compilation", () => {
           console.log(consoleMessages);
           if (consoleMessages.includes("One.")) {
             clearInterval(interval);
-
             resolve();
           }
         }, 100);
       });
-
       await page.goto(`http://localhost:${port}/test-two.html`, {
         waitUntil: "domcontentloaded",
       });
@@ -93,12 +89,10 @@ describe("lazy compilation", () => {
           console.log(consoleMessages);
           if (consoleMessages.includes("Two.")) {
             clearInterval(interval);
-
             resolve();
           }
         }, 100);
       });
-
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {

@@ -1,14 +1,16 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "graceful-fs";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/static-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import testServer from "../helpers/test-server.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const fs = require("graceful-fs");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/static-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const testServer = require("../helpers/test-server");
-const port = require("../ports-map")["static-directory-option"];
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["static-directory-option"];
 const staticDirectory = path.resolve(__dirname, "../fixtures/static-config");
 const publicDirectory = path.resolve(staticDirectory, "public");
 const otherPublicDirectory = path.resolve(staticDirectory, "other");
@@ -16,7 +18,6 @@ const otherPublicDirectory = path.resolve(staticDirectory, "other");
 describe("static.directory option", () => {
   describe("to directory", () => {
     const nestedFile = path.resolve(publicDirectory, "assets/example.txt");
-
     let compiler;
     let server;
     let page;
@@ -26,7 +27,6 @@ describe("static.directory option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           static: {
@@ -37,11 +37,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -60,19 +57,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -84,19 +76,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/other.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -116,16 +103,13 @@ describe("static.directory option", () => {
 
     it("watches node_modules", (done) => {
       const filePath = path.join(publicDirectory, "node_modules", "index.html");
-
       fs.writeFileSync(filePath, "foo", "utf8");
 
       // chokidar emitted a change,
       // meaning it watched the file correctly
       server.staticWatchers[0].on("change", (filepath) => {
         expect(typeof filepath).toBe("string");
-
         fs.unlinkSync(filePath);
-
         done();
       });
 
@@ -146,7 +130,6 @@ describe("static.directory option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           static: {
@@ -158,11 +141,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -180,19 +160,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/assets`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -204,19 +179,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/bar`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -231,7 +201,6 @@ describe("static.directory option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           static: {
@@ -243,11 +212,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -265,22 +231,16 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/assets/`, {
         waitUntil: "networkidle0",
       });
-
       const text = await response.text();
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(text).toContain("example.txt");
       expect(text).toContain("other.txt");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -292,19 +252,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/bar/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -319,7 +274,6 @@ describe("static.directory option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           static: {
@@ -330,11 +284,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -352,22 +303,16 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/assets`, {
         waitUntil: "networkidle0",
       });
-
       const text = await response.text();
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(text).toContain("example.txt");
       expect(text).toContain("other.txt");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -379,19 +324,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/bar`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -406,7 +346,6 @@ describe("static.directory option", () => {
 
     beforeEach(async () => {
       compiler = webpack(config);
-
       server = new Server(
         {
           static: [publicDirectory, otherPublicDirectory],
@@ -414,11 +353,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -436,19 +372,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
 
@@ -460,19 +391,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/foo.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -488,7 +414,6 @@ describe("static.directory option", () => {
 
     it("should throw exception (external url)", (done) => {
       expect.assertions(1);
-
       server = testServer.start(
         config,
         {
@@ -498,7 +423,6 @@ describe("static.directory option", () => {
           expect(error.message).toBe(
             "Using a URL as static.directory is not supported",
           );
-
           server.stopCallback(done);
         },
       );
@@ -567,7 +491,6 @@ describe("static.directory option", () => {
           expect(error.message).toBe(
             "Using a URL as static.directory is not supported",
           );
-
           server.stopCallback(done);
         },
       );
@@ -587,7 +510,6 @@ describe("static.directory option", () => {
         .spyOn(process, "cwd")
         .mockImplementation(() => path.resolve(staticDirectory));
       compiler = webpack(config);
-
       server = new Server(
         {
           static: undefined,
@@ -595,11 +517,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -617,19 +536,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/index.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });
@@ -646,9 +560,7 @@ describe("static.directory option", () => {
       // This is a somewhat weird test, but it is important that we mock
       // the PWD here, and test if /other.html in our "fake" PWD really is not requested.
       jest.spyOn(process, "cwd").mockImplementation(() => publicDirectory);
-
       compiler = webpack(config);
-
       server = new Server(
         {
           static: false,
@@ -656,11 +568,8 @@ describe("static.directory option", () => {
         },
         compiler,
       );
-
       await server.start();
-
       ({ page, browser } = await runBrowser());
-
       pageErrors = [];
       consoleMessages = [];
     });
@@ -678,19 +587,14 @@ describe("static.directory option", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       const response = await page.goto(`http://localhost:${port}/index.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(response.status()).toMatchSnapshot("response status");
-
       expect(await response.text()).toMatchSnapshot("response text");
-
       expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
         "console messages",
       );
-
       expect(pageErrors).toMatchSnapshot("page errors");
     });
   });

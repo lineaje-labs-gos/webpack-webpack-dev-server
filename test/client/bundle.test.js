@@ -1,5 +1,3 @@
-"use strict";
-
 const acorn = require("acorn");
 const request = require("supertest");
 const webpack = require("webpack");

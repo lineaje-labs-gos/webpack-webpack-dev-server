@@ -1,14 +1,17 @@
-"use strict";
+import { normalizeStderr, testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { normalizeStderr, testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-static"];
+const port = _ports_map["cli-static"];
 
 describe('"static" CLI option', () => {
   it('should work using "--static"', async () => {
     const { exitCode, stderr } = await testBin(["--port", port, "--static"]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static new-static"', async () => {
@@ -18,9 +21,12 @@ describe('"static" CLI option', () => {
       "--static",
       "new-static",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static new-static --static other-static"', async () => {
@@ -32,9 +38,12 @@ describe('"static" CLI option', () => {
       "--static",
       "other-static",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-reset"', async () => {
@@ -45,9 +54,12 @@ describe('"static" CLI option', () => {
       "--static",
       "new-static-after-reset",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-reset --static-directory new-static-directory"', async () => {
@@ -58,9 +70,12 @@ describe('"static" CLI option', () => {
       "--static-directory",
       "new-static-directory",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-directory static-dir"', async () => {
@@ -70,9 +85,12 @@ describe('"static" CLI option', () => {
       "--static-directory",
       "static-dir",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-public-path /public"', async () => {
@@ -82,9 +100,12 @@ describe('"static" CLI option', () => {
       "--static-public-path",
       "/public",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-public-path-reset"', async () => {
@@ -95,9 +116,12 @@ describe('"static" CLI option', () => {
       "--static-public-path",
       "/new-public",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-serve-index"', async () => {
@@ -106,9 +130,12 @@ describe('"static" CLI option', () => {
       port,
       "--static-serve-index",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--no-static-serve-index"', async () => {
@@ -117,9 +144,12 @@ describe('"static" CLI option', () => {
       port,
       "--no-static-serve-index",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--static-watch"', async () => {
@@ -128,9 +158,12 @@ describe('"static" CLI option', () => {
       port,
       "--static-watch",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--no-static-watch"', async () => {
@@ -139,8 +172,11 @@ describe('"static" CLI option', () => {
       port,
       "--no-static-watch",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 });

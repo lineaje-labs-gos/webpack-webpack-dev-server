@@ -1,24 +1,29 @@
-"use strict";
+import fs from "node:fs";
+import Server from "../../lib/Server.js";
+import { normalizeStderr, testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const fs = require("node:fs");
-const Server = require("../../lib/Server");
-const { normalizeStderr, testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-bonjour"];
-
+const port = _ports_map["cli-bonjour"];
 const defaultCertificateDir = Server.findCacheDir();
 
 describe('"bonjour" CLI option', () => {
   beforeEach(async () => {
-    fs.rmSync(defaultCertificateDir, { recursive: true, force: true });
+    fs.rmSync(defaultCertificateDir, {
+      recursive: true,
+      force: true,
+    });
   });
 
   it('should work using "--bonjour"', async () => {
     const { exitCode, stderr } = await testBin(["--port", port, "--bonjour"], {
       outputKillStr: /Broadcasting/,
     });
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot();
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot();
   });
 
   it('should work using "--bonjour and --server-type=https"', async () => {
@@ -28,10 +33,12 @@ describe('"bonjour" CLI option', () => {
         outputKillStr: /Broadcasting/,
       },
     );
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -41,8 +48,11 @@ describe('"bonjour" CLI option', () => {
       port,
       "--no-bonjour",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot();
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot();
   });
 });

@@ -1,14 +1,17 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "graceful-fs";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import oneWebTargetConfiguration from "../fixtures/multi-compiler-one-configuration/webpack.config.js";
+import twoWebTargetConfiguration from "../fixtures/multi-compiler-two-configurations/webpack.config.js";
+import universalConfiguration from "../fixtures/universal-compiler-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const fs = require("graceful-fs");
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const oneWebTargetConfiguration = require("../fixtures/multi-compiler-one-configuration/webpack.config");
-const twoWebTargetConfiguration = require("../fixtures/multi-compiler-two-configurations/webpack.config");
-const universalConfiguration = require("../fixtures/universal-compiler-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["multi-compiler"];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["multi-compiler"];
 
 describe("multi compiler", () => {
   it("should work with one web target configuration and do nothing", async () => {
@@ -17,15 +20,11 @@ describe("multi compiler", () => {
       port,
     };
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const pageErrors = [];
       const consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -33,11 +32,9 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/`, {
         waitUntil: "networkidle0",
       });
-
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
@@ -51,17 +48,12 @@ describe("multi compiler", () => {
     const devServerOptions = {
       port,
     };
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -69,21 +61,16 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/one-main.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/two-main.html`, {
         waitUntil: "networkidle0",
       });
-
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
@@ -109,61 +96,47 @@ describe("multi compiler", () => {
       "../fixtures/multi-compiler-two-configurations/two.js",
     );
     const originalTwoEntryContent = fs.readFileSync(pathToTwoEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           let text = message.text();
-
           if (/Error: Aborted because/.test(text)) {
             const splittedText = text.split("\n");
-
             text = `${splittedText[0]}\n${splittedText[1]}\n    <stack>`;
           }
-
           consoleMessages.push(text);
         })
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/one-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToOneEntry, `${originalOneEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/two-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToTwoEntry, `${originalTwoEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToOneEntry, originalOneEntryContent);
       fs.writeFileSync(pathToTwoEntry, originalTwoEntryContent);
     }
@@ -186,61 +159,47 @@ describe("multi compiler", () => {
       "../fixtures/multi-compiler-two-configurations/two.js",
     );
     const originalTwoEntryContent = fs.readFileSync(pathToTwoEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           let text = message.text();
-
           if (/Error: Aborted because/.test(text)) {
             const splittedText = text.split("\n");
-
             text = `${splittedText[0]}\n${splittedText[1]}\n    <stack>`;
           }
-
           consoleMessages.push(text);
         })
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/one-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToOneEntry, `${originalOneEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/two-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToTwoEntry, `${originalTwoEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToOneEntry, originalOneEntryContent);
       fs.writeFileSync(pathToTwoEntry, originalTwoEntryContent);
     }
@@ -263,17 +222,12 @@ describe("multi compiler", () => {
       "../fixtures/multi-compiler-two-configurations/two.js",
     );
     const originalTwoEntryContent = fs.readFileSync(pathToTwoEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -281,35 +235,29 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/one-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToOneEntry, `${originalOneEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/two-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToTwoEntry, `${originalTwoEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToOneEntry, originalOneEntryContent);
       fs.writeFileSync(pathToTwoEntry, originalTwoEntryContent);
     }
@@ -332,17 +280,12 @@ describe("multi compiler", () => {
       "../fixtures/multi-compiler-two-configurations/two.js",
     );
     const originalTwoEntryContent = fs.readFileSync(pathToTwoEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -350,35 +293,29 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/one-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToTwoEntry, `${originalTwoEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/two-main.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(pathToOneEntry, `${originalOneEntryContent}// comment`);
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToOneEntry, originalOneEntryContent);
       fs.writeFileSync(pathToTwoEntry, originalTwoEntryContent);
     }
@@ -390,11 +327,8 @@ describe("multi compiler", () => {
       port,
     };
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     const pageErrors = [];
     const consoleMessages = [];
     try {
@@ -404,12 +338,9 @@ describe("multi compiler", () => {
           waitUntil: "networkidle0",
         },
       );
-
       const serverResponseText = await serverResponse.text();
-
       expect(serverResponseText).toContain("Hello from the server");
       expect(serverResponseText).not.toContain("WebsocketServer");
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -417,7 +348,6 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
@@ -425,7 +355,6 @@ describe("multi compiler", () => {
       await browser.close();
       await server.stop();
     }
-
     expect(consoleMessages).toMatchSnapshot("console messages");
     expect(pageErrors).toMatchSnapshot("page errors");
   });
@@ -447,13 +376,9 @@ describe("multi compiler", () => {
       "../fixtures/universal-compiler-config/server.js",
     );
     const originalServerEntryContent = fs.readFileSync(pathToServerEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const serverResponse = await page.goto(
         `http://localhost:${port}/server.js`,
@@ -461,48 +386,38 @@ describe("multi compiler", () => {
           waitUntil: "networkidle0",
         },
       );
-
       const serverResponseText = await serverResponse.text();
-
       expect(serverResponseText).toContain("Hello from the server");
       expect(serverResponseText).not.toContain("WebsocketServer");
-
       const pageErrors = [];
       const consoleMessages = [];
-
       page
         .on("console", (message) => {
           let text = message.text();
-
           if (/Error: Aborted because/.test(text)) {
             const splittedText = text.split("\n");
-
             text = `${splittedText[0]}\n${splittedText[1]}\n    <stack>`;
           }
-
           consoleMessages.push(text);
         })
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(
         pathToBrowserEntry,
         `${originalBrowserEntryContent}// comment`,
       );
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToBrowserEntry, originalBrowserEntryContent);
       fs.writeFileSync(pathToServerEntry, originalServerEntryContent);
     }
@@ -520,13 +435,9 @@ describe("multi compiler", () => {
       "../fixtures/universal-compiler-config/browser.js",
     );
     const originalBrowserEntryContent = fs.readFileSync(pathToBrowserEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const serverResponse = await page.goto(
         `http://localhost:${port}/server.js`,
@@ -534,48 +445,38 @@ describe("multi compiler", () => {
           waitUntil: "networkidle0",
         },
       );
-
       const serverResponseText = await serverResponse.text();
-
       expect(serverResponseText).toContain("Hello from the server");
       expect(serverResponseText).not.toContain("WebsocketServer");
-
       const pageErrors = [];
       const consoleMessages = [];
-
       page
         .on("console", (message) => {
           let text = message.text();
-
           if (/Error: Aborted because/.test(text)) {
             const splittedText = text.split("\n");
-
             text = `${splittedText[0]}\n${splittedText[1]}\n    <stack>`;
           }
-
           consoleMessages.push(text);
         })
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(
         pathToBrowserEntry,
         `${originalBrowserEntryContent}// comment`,
       );
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToBrowserEntry, originalBrowserEntryContent);
     }
   });
@@ -597,13 +498,9 @@ describe("multi compiler", () => {
       "../fixtures/universal-compiler-config/server.js",
     );
     const originalServerEntryContent = fs.readFileSync(pathToServerEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const serverResponse = await page.goto(
         `http://localhost:${port}/server.js`,
@@ -611,15 +508,11 @@ describe("multi compiler", () => {
           waitUntil: "networkidle0",
         },
       );
-
       const serverResponseText = await serverResponse.text();
-
       expect(serverResponseText).toContain("Hello from the server");
       expect(serverResponseText).not.toContain("WebsocketServer");
-
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -627,41 +520,35 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(
         pathToBrowserEntry,
         `${originalBrowserEntryContent}// comment`,
       );
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(
         pathToServerEntry,
         `${originalServerEntryContent}// comment`,
       );
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToBrowserEntry, originalBrowserEntryContent);
       fs.writeFileSync(pathToServerEntry, originalServerEntryContent);
     }
@@ -684,13 +571,9 @@ describe("multi compiler", () => {
       "../fixtures/universal-compiler-config/server.js",
     );
     const originalServerEntryContent = fs.readFileSync(pathToServerEntry);
-
     const server = new Server(devServerOptions, compiler);
-
     await server.start();
-
     const { page, browser } = await runBrowser();
-
     try {
       const serverResponse = await page.goto(
         `http://localhost:${port}/server.js`,
@@ -698,15 +581,11 @@ describe("multi compiler", () => {
           waitUntil: "networkidle0",
         },
       );
-
       const serverResponseText = await serverResponse.text();
-
       expect(serverResponseText).toContain("Hello from the server");
       expect(serverResponseText).not.toContain("WebsocketServer");
-
       let pageErrors = [];
       let consoleMessages = [];
-
       page
         .on("console", (message) => {
           consoleMessages.push(message.text());
@@ -714,41 +593,35 @@ describe("multi compiler", () => {
         .on("pageerror", (error) => {
           pageErrors.push(error);
         });
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(
         pathToServerEntry,
         `${originalServerEntryContent}// comment`,
       );
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
-
       pageErrors = [];
       consoleMessages = [];
-
       await page.goto(`http://localhost:${port}/browser.html`, {
         waitUntil: "networkidle0",
       });
-
       fs.writeFileSync(
         pathToBrowserEntry,
         `${originalBrowserEntryContent}// comment`,
       );
-
-      await page.waitForNavigation({ waitUntil: "networkidle0" });
-
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     } finally {
       await browser.close();
       await server.stop();
-
       fs.writeFileSync(pathToBrowserEntry, originalBrowserEntryContent);
       fs.writeFileSync(pathToServerEntry, originalServerEntryContent);
     }

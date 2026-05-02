@@ -1,11 +1,13 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import util from "node:util";
+import execa from "execa";
+import { normalizeStderr, testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const util = require("node:util");
-const execa = require("execa");
-const { normalizeStderr, testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-basic"];
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["cli-basic"];
 const isMacOS = process.platform === "darwin";
 
 describe("basic", () => {
@@ -27,9 +29,12 @@ describe("basic", () => {
         "--port",
         port,
       ]);
-
       expect(exitCode).toBe(0);
-      expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+      expect(
+        normalizeStderr(stderr, {
+          ipv6: true,
+        }),
+      ).toMatchSnapshot("stderr");
     });
 
     it('should work using "--host localhost --port <port>"', async () => {
@@ -39,7 +44,6 @@ describe("basic", () => {
         "--host",
         "localhost",
       ]);
-
       expect(exitCode).toBe(0);
       expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
     });
@@ -54,9 +58,12 @@ describe("basic", () => {
         "--port",
         port,
       ]);
-
       expect(exitCode).toBe(0);
-      expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+      expect(
+        normalizeStderr(stderr, {
+          ipv6: true,
+        }),
+      ).toMatchSnapshot("stderr");
     });
 
     it("should work using multi compiler mode", async () => {
@@ -69,9 +76,12 @@ describe("basic", () => {
         "--port",
         port,
       ]);
-
       expect(exitCode).toBe(0);
-      expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+      expect(
+        normalizeStderr(stderr, {
+          ipv6: true,
+        }),
+      ).toMatchSnapshot("stderr");
     });
 
     it("should exit the process when SIGINT is detected", (done) => {
@@ -83,18 +93,16 @@ describe("basic", () => {
         __dirname,
         "../../examples/client/web-socket-url",
       );
-      const cp = execa("node", ["--port", port, cliPath], { cwd: examplePath });
-
+      const cp = execa("node", ["--port", port, cliPath], {
+        cwd: examplePath,
+      });
       cp.stdout.on("data", (data) => {
         const bits = data.toString();
-
         if (/main.js/.test(bits)) {
           expect(cp.pid).not.toBe(0);
-
           cp.kill("SIGINT");
         }
       });
-
       cp.on("exit", () => {
         done();
       });
@@ -106,20 +114,17 @@ describe("basic", () => {
         "../../bin/webpack-dev-server.js",
       );
       const cwd = path.resolve(__dirname, "../fixtures/cli");
-      const cp = execa("node", ["--port", port, cliPath], { cwd });
-
+      const cp = execa("node", ["--port", port, cliPath], {
+        cwd,
+      });
       let killed = false;
-
       cp.stdout.on("data", () => {
         if (!killed) {
           expect(cp.pid).not.toBe(0);
-
           cp.kill("SIGINT");
         }
-
         killed = true;
       });
-
       cp.on("exit", () => {
         done();
       });
@@ -141,18 +146,14 @@ describe("basic", () => {
           cwd: examplePath,
         },
       );
-
       cp.stdout.on("data", (data) => {
         const bits = data.toString();
-
         if (/main.js/.test(bits)) {
           expect(cp.pid).not.toBe(0);
-
           cp.stdin.write("hello");
           cp.stdin.end("world");
         }
       });
-
       cp.on("exit", () => {
         done();
       });
@@ -167,30 +168,25 @@ describe("basic", () => {
       const cp = execa(
         "node",
         [cliPath, "--port", port, "--watch-options-stdin"],
-        { cwd },
+        {
+          cwd,
+        },
       );
-
       let killed = false;
-
       cp.on("error", (error) => {
         done(error);
       });
-
       cp.stdin.on("error", (error) => {
         done(error);
       });
-
       cp.stdout.on("data", () => {
         if (!killed) {
           expect(cp.pid).not.toBe(0);
-
           cp.stdin.write("hello");
           cp.stdin.end("world");
         }
-
         killed = true;
       });
-
       cp.on("exit", () => {
         done();
       });
@@ -208,7 +204,6 @@ describe("basic", () => {
           outputKillStr: /client\/index\.js\?/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("client/index.js?");
     });
@@ -227,7 +222,6 @@ describe("basic", () => {
           outputKillStr: /foo\.js/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("client/index.js?");
       expect(stdout).toContain("foo.js");
@@ -245,7 +239,6 @@ describe("basic", () => {
           outputKillStr: /client\/index\.js\?/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("client/index.js?");
     });
@@ -264,7 +257,6 @@ describe("basic", () => {
           outputKillStr: /foo\.js/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("foo.js");
     });
@@ -276,7 +268,6 @@ describe("basic", () => {
           outputKillStr: /foo\.js/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("client/index.js?");
       expect(stdout).toContain("foo.js");
@@ -289,7 +280,6 @@ describe("basic", () => {
           outputKillStr: /foo\.js/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).not.toContain("client/index.js?");
       expect(stdout).toContain("foo.js");
@@ -302,7 +292,6 @@ describe("basic", () => {
           outputKillStr: /webpack\/hot\/dev-server/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("webpack/hot/dev-server");
     });
@@ -319,7 +308,6 @@ describe("basic", () => {
           outputKillStr: /client\/index\.js/,
         },
       );
-
       expect(exitCode).toBe(0);
       expect(stdout).toContain("client/index.js");
     });
@@ -331,10 +319,12 @@ describe("basic", () => {
         "../../bin/webpack-dev-server.js",
       );
       const cwd = path.resolve(__dirname, "../fixtures/cli");
-
-      const cp = execa("node", [cliPath, "--colors=false"], { cwd });
-      const cp2 = execa("node", [cliPath, "--colors=false"], { cwd });
-
+      const cp = execa("node", [cliPath, "--colors=false"], {
+        cwd,
+      });
+      const cp2 = execa("node", [cliPath, "--colors=false"], {
+        cwd,
+      });
       const runtime = {
         cp: {
           port: null,
@@ -345,47 +335,38 @@ describe("basic", () => {
           done: false,
         },
       };
-
       cp.stderr.on("data", (data) => {
         const bits = data.toString();
         const portMatch =
           /Project is running at http:\/\/localhost:(\d*)\//.exec(bits);
-
         if (portMatch) {
           [, runtime.cp.port] = portMatch;
         }
-
         if (/Compiled successfully/.test(bits)) {
           expect(cp.pid).not.toBe(0);
           cp.kill("SIGINT");
         }
       });
-
       cp2.stderr.on("data", (data) => {
         const bits = data.toString();
         const portMatch =
           /Project is running at http:\/\/localhost:(\d*)\//.exec(bits);
-
         if (portMatch) {
           [, runtime.cp2.port] = portMatch;
         }
-
         if (/Compiled successfully/.test(bits)) {
           expect(cp.pid).not.toBe(0);
           cp2.kill("SIGINT");
         }
       });
-
       cp.on("exit", () => {
         runtime.cp.done = true;
         if (runtime.cp2.done) {
           expect(runtime.cp.port).not.toBe(runtime.cp2.port);
         }
       });
-
       cp2.on("exit", () => {
         runtime.cp2.done = true;
-
         if (runtime.cp.done) {
           expect(runtime.cp.port).not.toBe(runtime.cp2.port);
         }

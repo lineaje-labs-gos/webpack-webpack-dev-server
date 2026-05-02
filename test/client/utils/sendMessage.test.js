@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 const sendMessage = require("../../../client-src/utils/sendMessage").default;
 
 describe("'sendMessage' function", () => {

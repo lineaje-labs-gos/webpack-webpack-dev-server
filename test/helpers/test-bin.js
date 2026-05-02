@@ -1,11 +1,12 @@
-"use strict";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import util from "node:util";
+import execa from "execa";
+import { Writable } from "readable-stream";
 
-const os = require("node:os");
-const path = require("node:path");
-const util = require("node:util");
-const execa = require("execa");
-const { Writable } = require("readable-stream");
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const webpackDevServerPath = path.resolve(
   __dirname,
   "../../bin/webpack-dev-server.js",
@@ -26,30 +27,24 @@ const processKill = (process) => {
   //   process.kill();
   // }
 };
-
 const testBin = (testArgs = [], options = {}) => {
   const cwd = process.cwd();
   const env = {
     WEBPACK_CLI_HELP_WIDTH: 2048,
     NODE_ENV: process.env.NODE_ENV,
   };
-
   if (typeof testArgs === "string") {
     testArgs = testArgs.split(" ");
   }
-
   let args;
-
   if (testArgs.includes("--help")) {
     args = [webpackDevServerPath, ...testArgs];
   } else {
     const configOptions = testArgs.includes("--config")
       ? []
       : ["--config", basicConfigPath];
-
     args = [webpackDevServerPath, ...configOptions, ...testArgs];
   }
-
   return new Promise((resolve, reject) => {
     const outputKillStr =
       options.outputKillStr ||
@@ -62,44 +57,36 @@ const testBin = (testArgs = [], options = {}) => {
       reject: false,
       ...options,
     });
-
     subprocess.stdout.pipe(
       new Writable({
         write(chunk, encoding, callback) {
           const str = chunk.toString();
           const output = util.stripVTControlCharacters(str);
-
           if (outputKillStr.test(output)) {
             processKill(subprocess);
           }
-
           callback();
         },
       }),
     );
-
     subprocess.stderr.pipe(
       new Writable({
         write(chunk, encoding, callback) {
           const str = chunk.toString();
           const output = util.stripVTControlCharacters(str);
-
           if (outputKillStr.test(output)) {
             processKill(subprocess);
           }
-
           callback();
         },
       }),
     );
-
     subprocess
       .then((result) => {
         // Sometimes we will kill our process early, so there is no exit code
         if (!result.exitCode) {
           result.exitCode = 0;
         }
-
         resolve(result);
       })
       .catch((error) => {
@@ -107,7 +94,6 @@ const testBin = (testArgs = [], options = {}) => {
       });
   });
 };
-
 const ipV4 =
   "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}";
 const ipV6Seg = "[a-fA-F\\d]{1,4}";
@@ -126,10 +112,8 @@ const ipV6 = `
   .replaceAll(/\s*\/\/.*$/gm, "")
   .replaceAll("\n", "")
   .trim();
-
 const normalizeStderr = (stderr, options = {}) => {
   let normalizedStderr = util.stripVTControlCharacters(stderr);
-
   normalizedStderr = normalizedStderr
     .replaceAll("\\", "/")
     .replaceAll(new RegExp(process.cwd().replaceAll("\\", "/"), "g"), "<cwd>")
@@ -147,14 +131,12 @@ const normalizeStderr = (stderr, options = {}) => {
     /.*Use `node --trace-deprecation ...` to show where the warning was created.*(\n)*/gm,
     "",
   );
-
   normalizedStderr = normalizedStderr.split("\n");
   normalizedStderr = normalizedStderr.filter(
     (item) => !/.+wait until bundle finished.*(\n)?/g.test(item),
   );
   normalizedStderr = normalizedStderr.join("\n");
   normalizedStderr = normalizedStderr.replaceAll(/:[0-9]+\//g, ":<port>/");
-
   if (options.https) {
     // We have deprecation warning on windows in some cases
     normalizedStderr = normalizedStderr.split("\n");
@@ -167,45 +149,34 @@ const normalizeStderr = (stderr, options = {}) => {
     );
     normalizedStderr = normalizedStderr.join("\n");
   }
-
   if (normalizedStderr.includes("Loopback:")) {
     normalizedStderr = normalizedStderr.split("\n");
-
     const loopbackIndex = normalizedStderr.findIndex((item) =>
       /Loopback:/.test(item),
     );
-
     const protocol = options.https ? "https" : "http";
-
     normalizedStderr[loopbackIndex] =
       `<i> Loopback: ${protocol}://localhost:<port>/, ${protocol}://<ip-v4>:<port>/, ${protocol}://[<ip-v6>]:<port>/`;
     normalizedStderr = normalizedStderr.join("\n");
   }
-
   if (options.ipv6 && !normalizedStderr.includes("On Your Network (IPv6):")) {
     // Github Actions doesn't support IPv6 on ubuntu in some cases
     normalizedStderr = normalizedStderr.split("\n");
-
     const ipv4MessageIndex = normalizedStderr.findIndex((item) =>
       /On Your Network \(IPv4\)/.test(item),
     );
-
     const protocol = options.https ? "https" : "http";
-
     normalizedStderr.splice(
       ipv4MessageIndex + 1,
       0,
       `<i> [webpack-dev-server] On Your Network (IPv6): ${protocol}://[<ip-v6>]:<port>/`,
     );
-
     normalizedStderr = normalizedStderr.join("\n");
   }
-
   if (/Gracefully shutting down/.test(normalizedStderr)) {
     normalizedStderr = normalizedStderr.split("\n").slice(0, -1).join("\n");
   }
-
   return normalizedStderr;
 };
 
-module.exports = { normalizeStderr, testBin };
+export { normalizeStderr, testBin };

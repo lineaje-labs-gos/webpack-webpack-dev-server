@@ -1,5 +1,7 @@
-"use strict";
-
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const oneHTMLContent = `
 <!doctype html>
 <html>
@@ -22,8 +24,7 @@ const twoHTMLContent = `
   <body></body>
 </html>
 `;
-
-module.exports = {
+export default {
   devtool: false,
   mode: "development",
   context: __dirname,
@@ -50,10 +51,8 @@ module.exports = {
         const pluginName = "html-generator-plugin-test";
         const oneFilename = "test-one.html";
         const twoFilename = "test-two.html";
-
         compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
           const { RawSource } = compiler.webpack.sources;
-
           compilation.hooks.processAssets.tap(
             {
               name: pluginName,
@@ -62,11 +61,8 @@ module.exports = {
             },
             () => {
               const oneSource = new RawSource(oneHTMLContent);
-
               compilation.emitAsset(oneFilename, oneSource);
-
               const twoSource = new RawSource(twoHTMLContent);
-
               compilation.emitAsset(twoFilename, twoSource);
             },
           );

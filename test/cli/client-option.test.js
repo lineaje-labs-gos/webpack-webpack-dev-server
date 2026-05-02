@@ -1,7 +1,7 @@
-"use strict";
+import { testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const { testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-client"];
+const port = _ports_map["cli-client"];
 
 describe('"client" CLI option', () => {
   it('should work using "--client-web-socket-transport ws"', async () => {
@@ -11,19 +11,16 @@ describe('"client" CLI option', () => {
       "--client-web-socket-transport",
       "ws",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
   it('should work using "--client-overlay"', async () => {
     const { exitCode } = await testBin(["--port", port, "--client-overlay"]);
-
     expect(exitCode).toBe(0);
   });
 
   it('should work using "--no-client-overlay"', async () => {
     const { exitCode } = await testBin(["--port", port, "--no-client-overlay"]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -33,7 +30,6 @@ describe('"client" CLI option', () => {
       port,
       "--client-overlay-errors",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -43,7 +39,6 @@ describe('"client" CLI option', () => {
       port,
       "--no-client-overlay-errors",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -53,7 +48,6 @@ describe('"client" CLI option', () => {
       port,
       "--client-overlay-warnings",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -63,7 +57,6 @@ describe('"client" CLI option', () => {
       port,
       "--no-client-overlay-warnings",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -74,13 +67,11 @@ describe('"client" CLI option', () => {
       "--client-logging",
       "verbose",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
   it('should work using "--client-progress"', async () => {
     const { exitCode } = await testBin(["--port", port, "--client-progress"]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -90,13 +81,11 @@ describe('"client" CLI option', () => {
       port,
       "--no-client-progress",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
   it('should work using "--client-reconnect"', async () => {
     const { exitCode } = await testBin(["--port", port, "--client-reconnect"]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -107,7 +96,6 @@ describe('"client" CLI option', () => {
       "--client-reconnect",
       5,
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -117,7 +105,6 @@ describe('"client" CLI option', () => {
       port,
       "--no-client-reconnect",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -128,7 +115,6 @@ describe('"client" CLI option', () => {
       "--client-web-socket-url",
       "ws://myhost.com:8080/foo/test",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -139,7 +125,6 @@ describe('"client" CLI option', () => {
       "--client-web-socket-url-protocol",
       "ws:",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -150,7 +135,6 @@ describe('"client" CLI option', () => {
       "--client-web-socket-url-hostname",
       "0.0.0.0",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -161,7 +145,6 @@ describe('"client" CLI option', () => {
       "--client-web-socket-url-pathname",
       "/ws",
     ]);
-
     expect(exitCode).toBe(0);
   });
 
@@ -172,7 +155,6 @@ describe('"client" CLI option', () => {
       "--client-web-socket-url-port",
       8080,
     ]);
-
     expect(exitCode).toBe(0);
   });
 });

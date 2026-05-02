@@ -1,31 +1,38 @@
-"use strict";
+import fs from "node:fs";
+import http2 from "node:http2";
+import https from "node:https";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createAdaptorServer } from "@hono/node-server";
+import connect from "connect";
+import express from "express";
+import { Hono } from "hono";
+import webpack from "webpack";
+import wdm from "webpack-dev-middleware";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const fs = require("node:fs");
-const path = require("node:path");
-const webpack = require("webpack");
-const wdm = require("webpack-dev-middleware");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map").app;
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map.app;
 const staticDirectory = path.resolve(
   __dirname,
   "../fixtures/static-config/public",
 );
-
 const apps = [
-  ["express", () => require("express")(), "http"],
-  ["express", () => require("express")(), "https"],
-  ["connect", () => require("connect")(), "http"],
-  ["connect", () => require("connect")(), "https"],
-  ["connect", () => require("connect")(), "http2"],
-  ["connect (async)", () => require("connect")(), "http"],
+  ["express", () => express(), "http"],
+  ["express", () => express(), "https"],
+  ["connect", () => connect(), "http"],
+  ["connect", () => connect(), "https"],
+  ["connect", () => connect(), "http2"],
+  ["connect (async)", () => connect(), "http"],
   [
     "hono",
-    () => new (require("hono").Hono)(),
+    () => new Hono(),
     (options, app) =>
-      require("@hono/node-server").createAdaptorServer({
+      createAdaptorServer({
         fetch: app.fetch,
       }),
     (_, devServer) => [
@@ -37,11 +44,11 @@ const apps = [
   ],
   [
     "hono",
-    () => new (require("hono").Hono)(),
+    () => new Hono(),
     (_, app) =>
-      require("@hono/node-server").createAdaptorServer({
+      createAdaptorServer({
         fetch: app.fetch,
-        createServer: require("node:https").createServer,
+        createServer: https.createServer,
         serverOptions: {
           key: fs.readFileSync(
             path.resolve(__dirname, "../fixtures/ssl/localhost-privkey.pem"),
@@ -60,12 +67,12 @@ const apps = [
   ],
   [
     "hono",
-    () => new (require("hono").Hono)(),
+    () => new Hono(),
     {
       type: (options, app) =>
-        require("@hono/node-server").createAdaptorServer({
+        createAdaptorServer({
           fetch: app.fetch,
-          createServer: require("node:http2").createSecureServer,
+          createServer: http2.createSecureServer,
           serverOptions: options,
         }),
       options: {
@@ -99,7 +106,6 @@ describe("app option", () => {
     describe(`should work using "${appName}" application and "${typeof server === "function" ? "custom server" : server}" server`, () => {
       beforeEach(async () => {
         compiler = webpack(config);
-
         devServer = new Server(
           {
             static: {
@@ -116,11 +122,8 @@ describe("app option", () => {
           },
           compiler,
         );
-
         await devServer.start();
-
         ({ page, browser } = await runBrowser());
-
         pageErrors = [];
         consoleMessages = [];
       });
@@ -143,19 +146,15 @@ describe("app option", () => {
           .on("pageerror", (error) => {
             pageErrors.push(error);
           });
-
         const pageUrl = devServer.isTlsServer
           ? `https://localhost:${port}/`
           : `http://localhost:${port}/`;
-
         const response = await page.goto(pageUrl, {
           waitUntil: "networkidle0",
         });
-
         const HTTPVersion = await page.evaluate(
           () => performance.getEntries()[0].nextHopProtocol,
         );
-
         if (
           server === "http2" ||
           (server.options && server.options.allowHTTP1)
@@ -164,11 +163,8 @@ describe("app option", () => {
         } else {
           expect(HTTPVersion).toBe("http/1.1");
         }
-
         expect(response.status()).toBe(200);
-
         const text = await response.text();
-
         expect(text).toContain(
           '<script type="text/javascript" charset="utf-8" src="/main.js"></script>',
         );

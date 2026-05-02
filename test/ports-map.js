@@ -1,5 +1,3 @@
-"use strict";
-
 // important: new port mappings must be added to the bottom of this list
 const listOfTests = {
   // CLI tests
@@ -81,39 +79,33 @@ const listOfTests = {
   app: 1,
   "cross-origin-request": 2,
 };
-
 let startPort = 8089;
-
 const ports = {};
-
 for (const key of Object.keys(listOfTests)) {
   const value = listOfTests[key];
-
   ports[key] =
     value === 1
       ? (startPort += 1)
-      : // eslint-disable-next-line no-loop-func
-        Array.from({ length: value }).map(() => (startPort += 1));
+      : Array.from({
+          length: value,
+          // eslint-disable-next-line no-loop-func
+        }).map(() => (startPort += 1));
 }
-
 const busy = {};
 
-module.exports = new Proxy(ports, {
+export default new Proxy(ports, {
   get(target, name) {
     if (!target[name]) {
       throw new Error(
         `Requested "${name}" port(s) for tests not found, please update "test/ports-map.js".`,
       );
     }
-
     if (busy[name]) {
       throw new Error(
         `The "${name}" port is already in use in another test, please add a new one.`,
       );
     }
-
     busy[name] = true;
-
     return target[name];
   },
 });

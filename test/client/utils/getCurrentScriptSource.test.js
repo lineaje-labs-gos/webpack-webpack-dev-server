@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 describe("'getCurrentScriptSource' function", () => {
   let getCurrentScriptSource;
 

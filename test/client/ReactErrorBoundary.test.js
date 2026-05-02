@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 const { createOverlay } = require("../../client-src/overlay");
 
 describe("createOverlay", () => {

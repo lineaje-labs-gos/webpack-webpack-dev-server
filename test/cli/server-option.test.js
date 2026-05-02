@@ -1,16 +1,17 @@
-"use strict";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { rimraf } from "rimraf";
+import Server from "../../lib/Server.js";
+import { normalizeStderr, testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const { rimraf } = require("rimraf");
-const Server = require("../../lib/Server");
-const { normalizeStderr, testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-server"];
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["cli-server"];
 const httpsCertificateDirectory = path.resolve(
   __dirname,
   "../fixtures/https-certificate",
 );
-
 const defaultCertificateDir = Server.findCacheDir();
 
 describe('"server" CLI options', () => {
@@ -25,10 +26,12 @@ describe('"server" CLI options', () => {
       "--server-type",
       "http",
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: false }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: false,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -39,10 +42,12 @@ describe('"server" CLI options', () => {
       "--server-type",
       "https",
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -52,7 +57,6 @@ describe('"server" CLI options', () => {
     const cert = path.join(httpsCertificateDirectory, "server.crt");
     const ca = path.join(httpsCertificateDirectory, "ca.pem");
     const passphrase = "webpack-dev-server";
-
     const { exitCode, stderr } = await testBin([
       "--port",
       port,
@@ -69,10 +73,12 @@ describe('"server" CLI options', () => {
       "--server-options-ca",
       ca,
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -82,7 +88,6 @@ describe('"server" CLI options', () => {
     const cert = path.join(httpsCertificateDirectory, "server.crt");
     const ca = path.join(httpsCertificateDirectory, "ca.pem");
     const passphrase = "webpack-dev-server";
-
     const { exitCode, stderr } = await testBin([
       "--port",
       port,
@@ -103,10 +108,12 @@ describe('"server" CLI options', () => {
       "--server-options-ca",
       ca,
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -116,7 +123,6 @@ describe('"server" CLI options', () => {
     const key = path.join(httpsCertificateDirectory, "server.key");
     const cert = path.join(httpsCertificateDirectory, "server.crt");
     const passphrase = "webpack-dev-server";
-
     const { exitCode, stderr } = await testBin([
       "--port",
       port,
@@ -131,10 +137,12 @@ describe('"server" CLI options', () => {
       "--server-options-cert",
       cert,
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -146,10 +154,12 @@ describe('"server" CLI options', () => {
       "https",
       "--server-options-request-cert",
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 
@@ -161,10 +171,12 @@ describe('"server" CLI options', () => {
       "https",
       "--no-server-options-request-cert",
     ]);
-
     expect(exitCode).toBe(0);
     expect(
-      normalizeStderr(stderr, { ipv6: true, https: true }),
+      normalizeStderr(stderr, {
+        ipv6: true,
+        https: true,
+      }),
     ).toMatchSnapshot();
   });
 });

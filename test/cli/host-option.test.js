@@ -1,10 +1,9 @@
-"use strict";
+import os from "node:os";
+import Server from "../../lib/Server.js";
+import { normalizeStderr, testBin } from "../helpers/test-bin.js";
+import _ports_map from "../ports-map.js";
 
-const os = require("node:os");
-const Server = require("../../lib/Server");
-const { normalizeStderr, testBin } = require("../helpers/test-bin");
-const port = require("../ports-map")["cli-host"];
-
+const port = _ports_map["cli-host"];
 const localIPv4 = Server.findIp("v4", false);
 const localIPv6 = Server.findIp("v6", false);
 
@@ -16,9 +15,12 @@ describe('"host" CLI option', () => {
       "--host",
       "0.0.0.0",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--host ::" (IPv6)', async () => {
@@ -28,9 +30,12 @@ describe('"host" CLI option', () => {
       "--host",
       "::",
     ]);
-
     expect(exitCode).toBe(0);
-    expect(normalizeStderr(stderr, { ipv6: true })).toMatchSnapshot("stderr");
+    expect(
+      normalizeStderr(stderr, {
+        ipv6: true,
+      }),
+    ).toMatchSnapshot("stderr");
   });
 
   it('should work using "--host ::1" (IPv6)', async () => {
@@ -40,7 +45,6 @@ describe('"host" CLI option', () => {
       "--host",
       "::1",
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
@@ -52,7 +56,6 @@ describe('"host" CLI option', () => {
       "--host",
       "localhost",
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
@@ -64,7 +67,6 @@ describe('"host" CLI option', () => {
       "--host",
       "127.0.0.1",
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
@@ -76,7 +78,6 @@ describe('"host" CLI option', () => {
       "--host",
       localIPv4,
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
@@ -89,7 +90,6 @@ describe('"host" CLI option', () => {
       "--host",
       localIPv6,
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
@@ -101,7 +101,6 @@ describe('"host" CLI option', () => {
       "--host",
       "local-ip",
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });
@@ -114,7 +113,6 @@ describe('"host" CLI option', () => {
       "--host",
       "local-ip",
     ]);
-
     expect(exitCode).toBe(0);
     jest.spyOn(os, "networkInterfaces").mockImplementation(() => ({
       lo: [
@@ -233,7 +231,6 @@ describe('"host" CLI option', () => {
       "--host",
       "local-ipv4",
     ]);
-
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
   });

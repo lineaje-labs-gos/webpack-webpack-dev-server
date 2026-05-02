@@ -2,25 +2,28 @@
  * @jest-environment node
  */
 
-"use strict";
+import { createRequire } from "node:module";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import fs from "graceful-fs";
+import webpack from "webpack";
+import WebSocket from "ws";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/client-config/webpack.config.js";
+import multiCompilerConfig from "../fixtures/multi-compiler-one-configuration/webpack.config.js";
+import reloadConfig from "../fixtures/reload-config/webpack.config.js";
+import HTMLGeneratorPlugin from "../helpers/html-generator-plugin.js";
+import runBrowser from "../helpers/run-browser.js";
+import _ports_map from "../ports-map.js";
 
-const path = require("node:path");
-const fs = require("graceful-fs");
-const webpack = require("webpack");
-const WebSocket = require("ws");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/client-config/webpack.config");
-const multiCompilerConfig = require("../fixtures/multi-compiler-one-configuration/webpack.config");
-const reloadConfig = require("../fixtures/reload-config/webpack.config");
-const HTMLGeneratorPlugin = require("../helpers/html-generator-plugin");
-const runBrowser = require("../helpers/run-browser");
-const port = require("../ports-map")["hot-and-live-reload"];
-
+const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const port = _ports_map["hot-and-live-reload"];
 const cssFilePath = path.resolve(
   __dirname,
   "../fixtures/reload-config/main.css",
 );
-
 const INVALID_MESSAGE = "[webpack-dev-server] App updated. Recompiling...";
 
 describe("hot and live reload", () => {
@@ -240,7 +243,6 @@ describe("hot and live reload", () => {
       },
     },
   ];
-
   let browser;
   let server;
 
@@ -252,11 +254,9 @@ describe("hot and live reload", () => {
     if (browser) {
       await browser.close();
     }
-
     if (server) {
       await server.stop();
     }
-
     fs.unlinkSync(cssFilePath);
   });
 
@@ -268,18 +268,20 @@ describe("hot and live reload", () => {
 
     // eslint-disable-next-line no-loop-func
     it(`${mode.title} (${webSocketServerTitle})`, async () => {
-      const webpackOptions = { ...reloadConfig, ...mode.webpackOptions };
+      const webpackOptions = {
+        ...reloadConfig,
+        ...mode.webpackOptions,
+      };
       const compiler = webpack(webpackOptions);
       const testDevServerOptions = mode.options || {};
-      const devServerOptions = { port, ...testDevServerOptions };
-
+      const devServerOptions = {
+        port,
+        ...testDevServerOptions,
+      };
       server = new Server(devServerOptions, compiler);
-
       await server.start();
-
       const webSocketServerLaunched =
         testDevServerOptions.webSocketServer !== false;
-
       await new Promise((resolve) => {
         const ws = new WebSocket(`ws://localhost:${devServerOptions.port}/ws`, {
           headers: {
@@ -287,31 +289,23 @@ describe("hot and live reload", () => {
             origin: `http://localhost:${devServerOptions.port}`,
           },
         });
-
         let opened = false;
         let received = false;
         let errored = false;
-
         ws.on("error", (_error) => {
           errored = true;
-
           ws.close();
         });
-
         ws.on("open", () => {
           opened = true;
         });
-
         ws.on("message", (data) => {
           const message = JSON.parse(data);
-
           if (message.type === "ok") {
             received = true;
-
             ws.close();
           }
         });
-
         ws.on("close", () => {
           if (opened && received && !errored) {
             resolve();
@@ -320,24 +314,17 @@ describe("hot and live reload", () => {
           }
         });
       });
-
       const launched = await runBrowser();
-
       ({ browser } = launched);
-
       const { page } = launched;
-
       const consoleMessages = [];
       const pageErrors = [];
-
       let doneHotUpdate = false;
       let hasDisconnectedMessage = false;
-
       page
         .on("console", (message) => {
           if (!hasDisconnectedMessage) {
             const text = message.text();
-
             hasDisconnectedMessage = /Disconnected!/.test(text);
             consoleMessages.push(text);
           }
@@ -350,24 +337,18 @@ describe("hot and live reload", () => {
             doneHotUpdate = true;
           }
         });
-
       await page.goto(`http://localhost:${port}/${mode.query || ""}`, {
         waitUntil: "networkidle0",
       });
-
       const backgroundColorBefore = await page.evaluate(() => {
         const { body } = document;
-
         return getComputedStyle(body)["background-color"];
       });
-
       expect(backgroundColorBefore).toBe("rgb(0, 0, 255)");
-
       fs.writeFileSync(
         cssFilePath,
         "body { background-color: rgb(255, 0, 0); }",
       );
-
       let waitHot =
         typeof testDevServerOptions.hot !== "undefined"
           ? testDevServerOptions.hot
@@ -376,12 +357,10 @@ describe("hot and live reload", () => {
         typeof testDevServerOptions.liveReload !== "undefined"
           ? testDevServerOptions.liveReload
           : true;
-
       if (webSocketServerLaunched === false) {
         waitHot = false;
         waitLiveReload = false;
       }
-
       if (Array.isArray(webpackOptions.entry)) {
         if (webpackOptions.entry.some((item) => item.includes("hot=true"))) {
           waitHot = true;
@@ -391,7 +370,6 @@ describe("hot and live reload", () => {
           waitHot = false;
         }
       }
-
       if (Array.isArray(webpackOptions.entry)) {
         if (
           webpackOptions.entry.some((item) => item.includes("live-reload=true"))
@@ -405,24 +383,19 @@ describe("hot and live reload", () => {
           waitLiveReload = false;
         }
       }
-
       const query = mode.query || "";
-
       if (query.includes("webpack-dev-server-hot=false")) {
         waitHot = false;
       }
-
       if (query.includes("webpack-dev-server-live-reload=false")) {
         waitLiveReload = false;
       }
-
       if (waitHot) {
         await page.waitForFunction(
           () =>
             getComputedStyle(document.body)["background-color"] ===
             "rgb(255, 0, 0)",
         );
-
         expect(doneHotUpdate).toBe(true);
       } else if (waitLiveReload) {
         await page.waitForNavigation({
@@ -433,25 +406,20 @@ describe("hot and live reload", () => {
           const interval = setInterval(() => {
             if (consoleMessages.includes(INVALID_MESSAGE)) {
               clearInterval(interval);
-
               resolve();
             }
           }, 100);
         });
       }
-
       const backgroundColorAfter = await page.evaluate(() => {
         const { body } = document;
-
         return getComputedStyle(body)["background-color"];
       });
-
       if (!waitHot && !waitLiveReload) {
         expect(backgroundColorAfter).toBe("rgb(0, 0, 255)");
       } else {
         expect(backgroundColorAfter).toBe("rgb(255, 0, 0)");
       }
-
       expect(consoleMessages).toMatchSnapshot("console messages");
       expect(pageErrors).toMatchSnapshot("page errors");
     });
@@ -471,9 +439,7 @@ describe("simple hot config HMR plugin", () => {
 
   beforeEach(async () => {
     compiler = webpack(config);
-
     ({ page, browser } = await runBrowser());
-
     pageErrors = [];
     consoleMessages = [];
   });
@@ -485,23 +451,22 @@ describe("simple hot config HMR plugin", () => {
 
   it("should register the HMR plugin before compilation is complete", async () => {
     let pluginFound = false;
-
     compiler.hooks.compilation.intercept({
       register: (tapInfo) => {
         if (tapInfo.name === "HotModuleReplacementPlugin") {
           pluginFound = true;
         }
-
         return tapInfo;
       },
     });
-
-    server = new Server({ port }, compiler);
-
+    server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(pluginFound).toBe(true);
-
     page
       .on("console", (message) => {
         consoleMessages.push(message);
@@ -509,17 +474,13 @@ describe("simple hot config HMR plugin", () => {
       .on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
     const response = await page.goto(`http://localhost:${port}/`, {
       waitUntil: "networkidle0",
     });
-
     expect(response.status()).toMatchSnapshot("response status");
-
     expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
       "console messages",
     );
-
     expect(pageErrors).toMatchSnapshot("page errors");
   });
 });
@@ -537,9 +498,7 @@ describe("simple hot config HMR plugin with already added HMR plugin", () => {
       ...config,
       plugins: [...config.plugins, new webpack.HotModuleReplacementPlugin()],
     });
-
     ({ page, browser } = await runBrowser());
-
     pageErrors = [];
     consoleMessages = [];
   });
@@ -551,24 +510,23 @@ describe("simple hot config HMR plugin with already added HMR plugin", () => {
 
   it("should register the HMR plugin before compilation is complete", async () => {
     let pluginFound = false;
-
     compiler.hooks.compilation.intercept({
       register: (tapInfo) => {
         if (tapInfo.name === "HotModuleReplacementPlugin") {
           pluginFound = true;
         }
-
         return tapInfo;
       },
     });
-
-    server = new Server({ port }, compiler);
-
+    server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(compiler.options.plugins).toHaveLength(2);
     expect(pluginFound).toBe(true);
-
     page
       .on("console", (message) => {
         consoleMessages.push(message);
@@ -576,17 +534,13 @@ describe("simple hot config HMR plugin with already added HMR plugin", () => {
       .on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
     const response = await page.goto(`http://localhost:${port}/`, {
       waitUntil: "networkidle0",
     });
-
     expect(response.status()).toMatchSnapshot("response status");
-
     expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
       "console messages",
     );
-
     expect(pageErrors).toMatchSnapshot("page errors");
   });
 });
@@ -600,12 +554,12 @@ describe("simple config with already added HMR plugin", () => {
   beforeEach(() => {
     compiler = webpack({
       ...config,
-      devServer: { hot: false },
+      devServer: {
+        hot: false,
+      },
       plugins: [...config.plugins, new webpack.HotModuleReplacementPlugin()],
     });
-
     loggerWarnSpy = jest.fn();
-
     getInfrastructureLoggerSpy = jest
       .spyOn(compiler, "getInfrastructureLogger")
       .mockImplementation(() => ({
@@ -621,38 +575,46 @@ describe("simple config with already added HMR plugin", () => {
   });
 
   it("should show warning with hot normalized as true", async () => {
-    server = new Server({ port }, compiler);
-
+    server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       '"hot: true" automatically applies HMR plugin, you don\'t have to add it manually to your webpack configuration.',
     );
-
     await server.stop();
   });
 
   it('should show warning with "hot: true"', async () => {
-    server = new Server({ port, hot: true }, compiler);
-
+    server = new Server(
+      {
+        port,
+        hot: true,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       '"hot: true" automatically applies HMR plugin, you don\'t have to add it manually to your webpack configuration.',
     );
-
     await server.stop();
   });
 
   it('should not show warning with "hot: false"', async () => {
-    server = new Server({ port, hot: false }, compiler);
-
+    server = new Server(
+      {
+        port,
+        hot: false,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(loggerWarnSpy).not.toHaveBeenCalledWith(
       '"hot: true" automatically applies HMR plugin, you don\'t have to add it manually to your webpack configuration.',
     );
-
     await server.stop();
   });
 });
@@ -667,9 +629,7 @@ describe("multi compiler hot config HMR plugin", () => {
 
   beforeEach(async () => {
     compiler = webpack(multiCompilerConfig);
-
     ({ page, browser } = await runBrowser());
-
     pageErrors = [];
     consoleMessages = [];
   });
@@ -681,23 +641,22 @@ describe("multi compiler hot config HMR plugin", () => {
 
   it("should register the HMR plugin before compilation is complete", async () => {
     let pluginFound = false;
-
     compiler.compilers[0].hooks.compilation.intercept({
       register: (tapInfo) => {
         if (tapInfo.name === "HotModuleReplacementPlugin") {
           pluginFound = true;
         }
-
         return tapInfo;
       },
     });
-
-    server = new Server({ port }, compiler);
-
+    server = new Server(
+      {
+        port,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(pluginFound).toBe(true);
-
     page
       .on("console", (message) => {
         consoleMessages.push(message);
@@ -705,17 +664,13 @@ describe("multi compiler hot config HMR plugin", () => {
       .on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
     const response = await page.goto(`http://localhost:${port}/`, {
       waitUntil: "networkidle0",
     });
-
     expect(response.status()).toMatchSnapshot("response status");
-
     expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
       "console messages",
     );
-
     expect(pageErrors).toMatchSnapshot("page errors");
   });
 });
@@ -730,9 +685,7 @@ describe("hot disabled HMR plugin", () => {
 
   beforeEach(async () => {
     compiler = webpack(config);
-
     ({ page, browser } = await runBrowser());
-
     pageErrors = [];
     consoleMessages = [];
   });
@@ -744,23 +697,23 @@ describe("hot disabled HMR plugin", () => {
 
   it("should NOT register the HMR plugin before compilation is complete", async () => {
     let pluginFound = false;
-
     compiler.hooks.compilation.intercept({
       register: (tapInfo) => {
         if (tapInfo.name === "HotModuleReplacementPlugin") {
           pluginFound = true;
         }
-
         return tapInfo;
       },
     });
-
-    server = new Server({ port, hot: false }, compiler);
-
+    server = new Server(
+      {
+        port,
+        hot: false,
+      },
+      compiler,
+    );
     await server.start();
-
     expect(pluginFound).toBe(false);
-
     page
       .on("console", (message) => {
         consoleMessages.push(message);
@@ -768,17 +721,13 @@ describe("hot disabled HMR plugin", () => {
       .on("pageerror", (error) => {
         pageErrors.push(error);
       });
-
     const response = await page.goto(`http://localhost:${port}/`, {
       waitUntil: "networkidle0",
     });
-
     expect(response.status()).toMatchSnapshot("response status");
-
     expect(consoleMessages.map((message) => message.text())).toMatchSnapshot(
       "console messages",
     );
-
     expect(pageErrors).toMatchSnapshot("page errors");
   });
 });

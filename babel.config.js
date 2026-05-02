@@ -21,6 +21,7 @@ export default (api) => {
           [
             "@babel/preset-env",
             {
+              modules: false,
               targets: {
                 node: "22.12.0",
               },

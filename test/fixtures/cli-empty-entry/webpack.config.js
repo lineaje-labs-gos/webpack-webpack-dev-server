@@ -1,7 +1,8 @@
-"use strict";
-
-module.exports = {
+export default {
   mode: "development",
-  stats: { orphanModules: true, preset: "detailed" },
+  stats: {
+    orphanModules: true,
+    preset: "detailed",
+  },
   entry: {},
 };

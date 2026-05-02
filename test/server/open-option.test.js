@@ -1,10 +1,9 @@
-"use strict";
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
+import config from "../fixtures/simple-config/webpack.config.js";
+import _ports_map from "../ports-map.js";
 
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-const config = require("../fixtures/simple-config/webpack.config");
-const port = require("../ports-map")["open-option"];
-
+const port = _ports_map["open-option"];
 const internalIPv4 = Server.findIp("v4", false);
 
 describe('"open" option', () => {
@@ -13,11 +12,9 @@ describe('"open" option', () => {
 
   beforeEach(async () => {
     compiler = webpack(config);
-
     jest.unstable_mockModule("open", () => ({
       default: jest.fn(() => Promise.resolve()),
     }));
-
     open = (await import("open")).default;
   });
 
@@ -34,10 +31,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/`, {
       wait: false,
     });
@@ -52,10 +47,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`https://localhost:${port}/`, {
       wait: false,
     });
@@ -63,7 +56,6 @@ describe('"open" option', () => {
 
   it("should work with '0.0.0.0' host but open localhost", async () => {
     const host = "0.0.0.0";
-
     const server = new Server(
       {
         host,
@@ -72,10 +64,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/`, {
       wait: false,
     });
@@ -83,7 +73,6 @@ describe('"open" option', () => {
 
   it("should work with '::' host", async () => {
     const host = "::";
-
     const server = new Server(
       {
         host,
@@ -92,10 +81,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/`, {
       wait: false,
     });
@@ -103,7 +90,6 @@ describe('"open" option', () => {
 
   it("should work with 'localhost' host", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -112,10 +98,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
       wait: false,
     });
@@ -123,7 +107,6 @@ describe('"open" option', () => {
 
   it("should work with '127.0.0.1' host", async () => {
     const host = "127.0.0.1";
-
     const server = new Server(
       {
         host,
@@ -132,10 +115,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
       wait: false,
     });
@@ -143,7 +124,6 @@ describe('"open" option', () => {
 
   it("should work with '::1' host", async () => {
     const host = "::1";
-
     const server = new Server(
       {
         host,
@@ -152,10 +132,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://[${host}]:${port}/`, {
       wait: false,
     });
@@ -170,10 +148,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${internalIPv4}:${port}/`, {
       wait: false,
     });
@@ -181,7 +157,6 @@ describe('"open" option', () => {
 
   it("should work with boolean", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -190,10 +165,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
       wait: false,
     });
@@ -201,7 +174,6 @@ describe('"open" option', () => {
 
   it("should work with boolean but don't close with 'false' value", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -210,16 +182,13 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).not.toHaveBeenCalled();
   });
 
   it("should work with relative string", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -228,10 +197,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/index.html`, {
       wait: false,
     });
@@ -239,7 +206,6 @@ describe('"open" option', () => {
 
   it('should work with "<url>" pattern', async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -248,10 +214,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
       wait: false,
     });
@@ -259,7 +223,6 @@ describe('"open" option', () => {
 
   it('should work with relative string starting with "/"', async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -268,10 +231,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/index.html`, {
       wait: false,
     });
@@ -279,7 +240,6 @@ describe('"open" option', () => {
 
   it("should work with absolute string", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         open: `http://${host}:${port}/index.html`,
@@ -288,10 +248,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/index.html`, {
       wait: false,
     });
@@ -299,7 +257,6 @@ describe('"open" option', () => {
 
   it("should work with multiple relative strings", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host: "localhost",
@@ -308,10 +265,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(
       1,
       `http://${host}:${port}/first.html`,
@@ -330,7 +285,6 @@ describe('"open" option', () => {
 
   it("should work with multiple absolute strings", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host: "localhost",
@@ -342,10 +296,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(
       1,
       `http://${host}:${port}/first.html`,
@@ -364,7 +316,6 @@ describe('"open" option', () => {
 
   it('should work with "<url>" pattern in multiple strings', async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host: "localhost",
@@ -373,10 +324,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(1, `http://${host}:${port}/`, {
       wait: false,
     });
@@ -391,7 +340,6 @@ describe('"open" option', () => {
 
   it("should work with empty object", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -400,10 +348,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
       wait: false,
     });
@@ -411,7 +357,6 @@ describe('"open" option', () => {
 
   it("should work with object and with the 'target' option", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -422,10 +367,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/index.html`, {
       wait: false,
     });
@@ -433,7 +376,6 @@ describe('"open" option', () => {
 
   it("should work with object and with multiple values of the 'target' option", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -444,10 +386,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(
       1,
       `http://${host}:${port}/first.html`,
@@ -466,7 +406,6 @@ describe('"open" option', () => {
 
   it("should work with object and with the 'app' option", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -477,42 +416,44 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "google-chrome" },
+      app: {
+        name: "google-chrome",
+      },
       wait: false,
     });
   });
 
   it("should work with object and with the 'app' and 'arguments' options", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
         port,
         open: {
-          app: { name: "google-chrome", arguments: ["--incognito"] },
+          app: {
+            name: "google-chrome",
+            arguments: ["--incognito"],
+          },
         },
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "google-chrome", arguments: ["--incognito"] },
+      app: {
+        name: "google-chrome",
+        arguments: ["--incognito"],
+      },
       wait: false,
     });
   });
 
   it('should work with object with "target" and "app" options', async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -524,19 +465,18 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/index.html`, {
-      app: { name: "google-chrome" },
+      app: {
+        name: "google-chrome",
+      },
       wait: false,
     });
   });
 
   it('should work with <url> pattern in "target" and "app" options', async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -548,40 +488,43 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "google-chrome" },
+      app: {
+        name: "google-chrome",
+      },
       wait: false,
     });
   });
 
   it("should work with object, with multiple value of the 'target' option and with the 'app' and 'arguments' options", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
         port,
         open: {
           target: ["first.html", "second.html"],
-          app: { name: "google-chrome", arguments: ["--incognito"] },
+          app: {
+            name: "google-chrome",
+            arguments: ["--incognito"],
+          },
         },
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(
       1,
       `http://${host}:${port}/first.html`,
       {
         wait: false,
-        app: { name: "google-chrome", arguments: ["--incognito"] },
+        app: {
+          name: "google-chrome",
+          arguments: ["--incognito"],
+        },
       },
     );
     expect(open).toHaveBeenNthCalledWith(
@@ -589,35 +532,41 @@ describe('"open" option', () => {
       `http://${host}:${port}/second.html`,
       {
         wait: false,
-        app: { name: "google-chrome", arguments: ["--incognito"] },
+        app: {
+          name: "google-chrome",
+          arguments: ["--incognito"],
+        },
       },
     );
   });
 
   it("should work with object, with multiple value of the 'target' option (relative and absolute URLs) and with the 'app' option with arguments", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
         port,
         open: {
           target: ["first.html", `http://${host}:${port}/second.html`],
-          app: { name: "google-chrome", arguments: ["--incognito"] },
+          app: {
+            name: "google-chrome",
+            arguments: ["--incognito"],
+          },
         },
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(
       1,
       `http://${host}:${port}/first.html`,
       {
         wait: false,
-        app: { name: "google-chrome", arguments: ["--incognito"] },
+        app: {
+          name: "google-chrome",
+          arguments: ["--incognito"],
+        },
       },
     );
     expect(open).toHaveBeenNthCalledWith(
@@ -625,14 +574,16 @@ describe('"open" option', () => {
       `http://${host}:${port}/second.html`,
       {
         wait: false,
-        app: { name: "google-chrome", arguments: ["--incognito"] },
+        app: {
+          name: "google-chrome",
+          arguments: ["--incognito"],
+        },
       },
     );
   });
 
   it("should work with <url> pattern in multiple open options", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -650,24 +601,24 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "google-chrome" },
+      app: {
+        name: "google-chrome",
+      },
       wait: false,
     });
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "firefox" },
+      app: {
+        name: "firefox",
+      },
       wait: false,
     });
   });
 
   it("should work with multiple open options without target", async () => {
     const host = "localhost";
-
     const server = new Server(
       {
         host,
@@ -683,24 +634,24 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "google-chrome" },
+      app: {
+        name: "google-chrome",
+      },
       wait: false,
     });
-
     expect(open).toHaveBeenCalledWith(`http://${host}:${port}/`, {
-      app: { name: "firefox" },
+      app: {
+        name: "firefox",
+      },
       wait: false,
     });
   });
 
   it("should log warning when can't open", async () => {
     open.mockRejectedValue(undefined);
-
     const loggerWarnSpy = jest.fn();
     const getInfrastructureLoggerSpy = jest
       .spyOn(compiler, "getInfrastructureLogger")
@@ -709,7 +660,6 @@ describe('"open" option', () => {
         info: () => {},
         log: () => {},
       }));
-
     const server = new Server(
       {
         port,
@@ -717,24 +667,20 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/`, {
       wait: false,
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       `Unable to open "http://localhost:${port}/" page. If you are running in a headless environment, please do not use the "open" option or related flags like "--open", "--open-target", and "--open-app-name".`,
     );
-
     getInfrastructureLoggerSpy.mockRestore();
     loggerWarnSpy.mockRestore();
   });
 
   it("should log warning when can't open with string", async () => {
     open.mockRejectedValue(undefined);
-
     const loggerWarnSpy = jest.fn();
     const getInfrastructureLoggerSpy = jest
       .spyOn(compiler, "getInfrastructureLogger")
@@ -743,7 +689,6 @@ describe('"open" option', () => {
         info: () => {},
         log: () => {},
       }));
-
     const server = new Server(
       {
         open: "index.html",
@@ -751,24 +696,20 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/index.html`, {
       wait: false,
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       `Unable to open "http://localhost:${port}/index.html" page. If you are running in a headless environment, please do not use the "open" option or related flags like "--open", "--open-target", and "--open-app-name".`,
     );
-
     getInfrastructureLoggerSpy.mockRestore();
     loggerWarnSpy.mockRestore();
   });
 
   it("should log warning when can't open with object", async () => {
     open.mockRejectedValue(undefined);
-
     const loggerWarnSpy = jest.fn();
     const getInfrastructureLoggerSpy = jest
       .spyOn(compiler, "getInfrastructureLogger")
@@ -777,7 +718,6 @@ describe('"open" option', () => {
         info: () => {},
         log: () => {},
       }));
-
     const server = new Server(
       {
         open: {
@@ -788,25 +728,23 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/index.html`, {
-      app: { name: "google-chrome" },
+      app: {
+        name: "google-chrome",
+      },
       wait: false,
     });
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       `Unable to open "http://localhost:${port}/index.html" page in "google-chrome" app. If you are running in a headless environment, please do not use the "open" option or related flags like "--open", "--open-target", and "--open-app-name".`,
     );
-
     loggerWarnSpy.mockRestore();
     getInfrastructureLoggerSpy.mockRestore();
   });
 
   it("should log warning when can't open with object with the 'app' option with arguments", async () => {
     open.mockRejectedValue(undefined);
-
     const loggerWarnSpy = jest.fn();
     const getInfrastructureLoggerSpy = jest
       .spyOn(compiler, "getInfrastructureLogger")
@@ -815,7 +753,6 @@ describe('"open" option', () => {
         info: () => {},
         log: () => {},
       }));
-
     const server = new Server(
       {
         open: {
@@ -829,10 +766,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenCalledWith(`http://localhost:${port}/index.html`, {
       app: {
         name: "google-chrome",
@@ -843,14 +778,12 @@ describe('"open" option', () => {
     expect(loggerWarnSpy).toHaveBeenCalledWith(
       `Unable to open "http://localhost:${port}/index.html" page in "google-chrome" app with "--incognito --new-window" arguments. If you are running in a headless environment, please do not use the "open" option or related flags like "--open", "--open-target", and "--open-app-name".`,
     );
-
     getInfrastructureLoggerSpy.mockRestore();
     loggerWarnSpy.mockRestore();
   });
 
   it("should log warning when can't open with object with the 'app' option with arguments #2", async () => {
     open.mockRejectedValue(undefined);
-
     const loggerWarnSpy = jest.fn();
     const getInfrastructureLoggerSpy = jest
       .spyOn(compiler, "getInfrastructureLogger")
@@ -859,7 +792,6 @@ describe('"open" option', () => {
         info: () => {},
         log: () => {},
       }));
-
     const server = new Server(
       {
         open: {
@@ -873,10 +805,8 @@ describe('"open" option', () => {
       },
       compiler,
     );
-
     await server.start();
     await server.stop();
-
     expect(open).toHaveBeenNthCalledWith(
       1,
       `http://localhost:${port}/first.html`,
@@ -907,7 +837,6 @@ describe('"open" option', () => {
       2,
       `Unable to open "http://localhost:${port}/second.html" page in "google-chrome" app with "--incognito --new-window" arguments. If you are running in a headless environment, please do not use the "open" option or related flags like "--open", "--open-target", and "--open-app-name".`,
     );
-
     getInfrastructureLoggerSpy.mockRestore();
     loggerWarnSpy.mockRestore();
   });

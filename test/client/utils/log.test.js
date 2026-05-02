@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-"use strict";
-
 describe("'log' function", () => {
   let logMock;
   let setLogLevel;

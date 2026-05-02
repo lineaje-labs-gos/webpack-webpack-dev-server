@@ -1,8 +1,5 @@
-"use strict";
-
-const webpack = require("webpack");
-const Server = require("../../lib/Server");
-
+import webpack from "webpack";
+import Server from "../../lib/Server.js";
 /** @typedef {import("webpack").Configuration} Configuration */
 /** @typedef {import("../../lib/Server").Configuration} DevServerConfiguration */
 /** @typedef {import("webpack").Compiler} Compiler */
@@ -27,21 +24,16 @@ function startFullSetup(config, devServerConfig, done) {
     // this provides a way of using the default static value
     delete devServerConfig.static;
   }
-
   const compiler = webpack(config);
-
   server = new Server(devServerConfig, compiler);
-
   server.startCallback((error) => {
     if (error && done) {
       return done(error);
     }
-
     if (done) {
       done();
     }
   });
-
   return {
     server,
     compiler,
@@ -56,21 +48,16 @@ function startFullSetup(config, devServerConfig, done) {
  */
 function start(config, devServerConfig, done) {
   let readyCount = 0;
-
   const ready = (error) => {
     if (error && done) {
       done(error);
-
       return;
     }
-
     readyCount += 1;
-
     if (readyCount === 2) {
       done();
     }
   };
-
   const result = startFullSetup(config, devServerConfig, ready);
 
   // wait for compilation, since dev server can start before this
@@ -78,7 +65,6 @@ function start(config, devServerConfig, done) {
   result.compiler.hooks.done.tap("done", () => {
     ready();
   });
-
   return result.server;
 }
 
@@ -96,7 +82,7 @@ function close(done) {
   }
 }
 
-module.exports = {
+export default {
   close,
   start,
 };
