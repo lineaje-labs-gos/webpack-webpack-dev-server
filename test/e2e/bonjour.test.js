@@ -1,23 +1,32 @@
 import os from "node:os";
 import webpack from "webpack";
-import Server from "../../lib/Server.js";
 import config from "../fixtures/simple-config/webpack.config.js";
 import runBrowser from "../helpers/run-browser.js";
 import _ports_map from "../ports-map.js";
 
 const port = _ports_map.bonjour;
 
-describe("bonjour option", () => {
-  let mockPublish;
-  let mockUnpublishAll;
-  let mockDestroy;
+const mockPublish = jest.fn();
+const mockUnpublishAll = jest.fn((callback) => {
+  callback();
+});
+const mockDestroy = jest.fn();
 
+jest.unstable_mockModule("bonjour-service", () => ({
+  Bonjour: jest.fn().mockImplementation(() => ({
+    publish: mockPublish,
+    unpublishAll: mockUnpublishAll,
+    destroy: mockDestroy,
+  })),
+}));
+
+const { default: Server } = await import("../../lib/Server.js");
+
+describe("bonjour option", () => {
   beforeEach(() => {
-    mockPublish = jest.fn();
-    mockUnpublishAll = jest.fn((callback) => {
-      callback();
-    });
-    mockDestroy = jest.fn();
+    mockPublish.mockClear();
+    mockUnpublishAll.mockClear();
+    mockDestroy.mockClear();
   });
 
   describe("as true", () => {
@@ -29,13 +38,6 @@ describe("bonjour option", () => {
     let consoleMessages;
 
     beforeEach(async () => {
-      jest.mock("bonjour-service", () => ({
-        Bonjour: jest.fn().mockImplementation(() => ({
-          publish: mockPublish,
-          unpublishAll: mockUnpublishAll,
-          destroy: mockDestroy,
-        })),
-      }));
       compiler = webpack(config);
       server = new Server(
         {
@@ -95,13 +97,6 @@ describe("bonjour option", () => {
     let consoleMessages;
 
     beforeEach(async () => {
-      jest.mock("bonjour-service", () => ({
-        Bonjour: jest.fn().mockImplementation(() => ({
-          publish: mockPublish,
-          unpublishAll: mockUnpublishAll,
-          destroy: mockDestroy,
-        })),
-      }));
       compiler = webpack(config);
       server = new Server(
         {
@@ -159,13 +154,6 @@ describe("bonjour option", () => {
     let consoleMessages;
 
     beforeEach(async () => {
-      jest.mock("bonjour-service", () => ({
-        Bonjour: jest.fn().mockImplementation(() => ({
-          publish: mockPublish,
-          unpublishAll: mockUnpublishAll,
-          destroy: mockDestroy,
-        })),
-      }));
       compiler = webpack(config);
       server = new Server(
         {
@@ -226,13 +214,6 @@ describe("bonjour option", () => {
     let consoleMessages;
 
     beforeEach(async () => {
-      jest.mock("bonjour-service", () => ({
-        Bonjour: jest.fn().mockImplementation(() => ({
-          publish: mockPublish,
-          unpublishAll: mockUnpublishAll,
-          destroy: mockDestroy,
-        })),
-      }));
       compiler = webpack(config);
       server = new Server(
         {
