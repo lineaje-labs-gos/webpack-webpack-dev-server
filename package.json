@@ -1,6 +1,6 @@
 {
   "name": "webpack-dev-server",
-  "version": "3.11.3",
+  "version": "3.11.3-lineaje-01",
   "description": "Serves a webpack app. Updates the browser on changes.",
   "bin": "bin/webpack-dev-server.js",
   "main": "lib/Server.js",
@@ -124,6 +124,15 @@
   "author": "Tobias Koppers @sokra",
   "bugs": "https://github.com/webpack/webpack-dev-server/issues",
   "homepage": "https://github.com/webpack/webpack-dev-server#readme",
-  "repository": "https://github.com/webpack/webpack-dev-server.git",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lineaje-labs-gos/webpack-webpack-dev-server"
+  },
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "Lineaje DepFixer",
+      "email": "221268890+Lineaje-DepFixer@users.noreply.github.com"
+    }
+  ]
 }
